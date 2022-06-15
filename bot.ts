@@ -16,7 +16,7 @@ import {
   hydrateFiles,
 } from "https://deno.land/x/grammy_files@v1.0.4/mod.ts";
 import { resize } from "https://deno.land/x/deno_image/mod.ts";
-import { configAsync } from "https://deno.land/x/dotenv/mod.ts";
+import { config } from "https://deno.land/x/dotenv/mod.ts";
 
 interface SessionData {
   sets: string[];
@@ -95,7 +95,7 @@ type MyConversation = Conversation<MyContext>;
 //   await Deno.remove(".tmp/" + file.file_id);
 // }
 
-const BOT_TOKEN = (await configAsync()).BOT_TOKEN;
+const BOT_TOKEN = Deno.env.get("BOT_TOKEN") || config().BOT_TOKEN;
 
 export const bot = new Bot<MyContext>(BOT_TOKEN);
 
