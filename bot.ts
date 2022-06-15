@@ -104,6 +104,8 @@ bot.use(session({ initial: () => ({}) }));
 // bot.use(conversations());
 // bot.use(createConversation(createStickerPack));
 
-bot.command("newpack", (ctx) => ctx.conversation.enter("createStickerPack"));
+// bot.command("newpack", (ctx) => ctx.conversation.enter("createStickerPack"));
+
+bot.command("start", (ctx) => ctx.reply("Hello"));
 
 // bot.start();
