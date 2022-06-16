@@ -106,17 +106,9 @@ bot.use(conversations());
 
 // bot.command("newpack", (ctx) => ctx.conversation.enter("createStickerPack"));
 
-bot.command("start", (ctx) => ctx.reply("Hello"));
-
-bot.on([":video", ":animation", ":sticker", ":photo"], async (ctx) => {
-  // Prepare the file for download.
-  const file = await ctx.getFile();
-  // Download the file to a temporary location.
-  const path = await file.download();
-  // Print the file path.
-  console.log("File saved at", path);
-  await ctx.reply("File saved at " + path);
-});
+bot.command("start", (ctx) =>
+  ctx.reply("This bot is not ready yet, please wait ❤️")
+);
 
 bot.catch((error) => {
   error.ctx.reply("Something went wrong");
