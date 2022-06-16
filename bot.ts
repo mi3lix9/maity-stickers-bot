@@ -108,4 +108,8 @@ bot.command("newpack", (ctx) => ctx.conversation.enter("createStickerPack"));
 
 bot.command("start", (ctx) => ctx.reply("Hello"));
 
+bot.catch((error) => {
+  error.ctx.reply("Something went wrong");
+  console.error(error);
+});
 // bot.start();
