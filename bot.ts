@@ -20,7 +20,7 @@ import { BOT_OWNER_ID, BOT_TOKEN } from "./constants.ts";
 import { resizeImage } from "./resizeImage.ts";
 
 interface SessionData {
-  sets: string[];
+  // sets: string[];
 }
 
 type MyContext = FileFlavor<Context> &
@@ -92,21 +92,22 @@ bot.use(createConversation(addSticker));
 bot.command("newpack", (ctx) => ctx.conversation.enter("createStickerPack"));
 bot.command("addsticker", (ctx) => ctx.conversation.enter("addSticker"));
 
-bot.command("start", (ctx) =>
-  ctx.reply(
-    "Hello! I am a bot that helps you create sticker packs easily, please enter /newpack to start new pack or /addSticker to add sticker to your existing pack \n\n Please notice that, this sticker is still under development, so you might get unexpected results. Please report any bugs to @mi3lix9!"
-  )
-);
+bot.command("start", async (ctx) => {
+  await ctx.api.setMyCommands([
+    { command: "newpack", description: "Create a new sticker pack" },
+    { command: "addsticker", description: "Add sticker to your existing pack" },
+  ]);
 
-bot.api.setMyCommands([
-  { command: "newpack", description: "Create a new sticker pack" },
-  { command: "addsticker", description: "Add sticker to your existing pack" },
-]);
+  await ctx.reply(
+    "Hello! I am a bot that helps you create sticker packs easily, please enter /newpack to start new pack or /addSticker to add sticker to your existing pack \n\n Please notice that, this sticker is still under development, so you might get unexpected results. Please report any bugs to @mi3lix9!"
+  );
+});
+
 // bot.command("myid", (ctx) => ctx.reply(ctx.from!.id.toString()));
 
 bot.catch(async (error) => {
   await error.ctx.reply("Something went wrong");
-  error.ctx.api.sendMessage(BOT_OWNER_ID, JSON.stringify({ error }, null, 2));
+  // error.ctx.api.sendMessage(BOT_OWNER_ID, JSON.stringify({ error }, null, 2));
   console.error(error);
 });
 
