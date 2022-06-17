@@ -109,6 +109,7 @@ bot.catch(async (error) => {
   error.ctx.api.sendMessage(BOT_OWNER_ID, JSON.stringify({ error }, null, 2));
   console.error(error);
 });
+
 // bot.start();
 
 async function getSticker(ctx: MyContext, conversation: MyConversation) {
