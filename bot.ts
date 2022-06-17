@@ -37,7 +37,9 @@ async function createStickerPack(conversation: MyConversation, ctx: MyContext) {
   let name: string;
   let isAvailable: boolean;
   do {
-    await ctx.reply("Send a name for your pack");
+    await ctx.reply(
+      "Send a name for your pack (must be unique and without spaces)"
+    );
     ctx = await conversation.waitFor(":text");
     name = ctx.message?.text!;
     isAvailable = !!(await bot.api.getStickerSet(name));
@@ -56,22 +58,27 @@ async function createStickerPack(conversation: MyConversation, ctx: MyContext) {
     `Sticker pack created!: \n https://t.me/addstickers/${name} \n\n you can send more stickers, or send /done to stop`
   );
 
-  ctx = await conversation.waitFor(":text");
-  if (ctx.message?.text == "/done") {
-    return await ctx.reply("Sticker pack created!");
-  }
+  do {
+    await ctx.reply("Now, send a sticker or a photo to add into your pack");
+    ctx = await conversation.waitFor([":sticker", ":photo", ":text"]);
 
-  await ctx.conversation.enter("addSticker");
+    const { sticker, emojis } = await getSticker(ctx, conversation);
+    await ctx.api.addStickerToSet(ctx.from!.id, name, emojis, {
+      png_sticker: sticker,
+    });
+    await ctx.reply("Sticker added!, send another sticker or /done to stop");
+  } while (ctx.message?.text != "/done");
+  return;
 }
 
 async function addSticker(conversation: MyConversation, ctx: MyContext) {
   await ctx.reply("Send a sticker from your pack that you want to add");
   ctx = await conversation.waitFor(":sticker");
-  const name = ctx.message?.text!;
+  const name = ctx.message?.sticker?.set_name!;
 
   do {
     await ctx.reply("Now, send a sticker or a photo to add into your pack");
-    ctx = await conversation.waitFor([":sticker", ":photo"]);
+    ctx = await conversation.waitFor([":sticker", ":photo", ":text"]);
 
     const { sticker, emojis } = await getSticker(ctx, conversation);
     await ctx.api.addStickerToSet(ctx.from!.id, name, emojis, {
