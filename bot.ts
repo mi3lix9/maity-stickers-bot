@@ -59,33 +59,34 @@ async function createStickerPack(conversation: MyConversation, ctx: MyContext) {
   );
 
   do {
-    await ctx.reply("Now, send a sticker or a photo to add into your pack");
-    ctx = await conversation.waitFor([":sticker", ":photo", ":text"]);
-
     const { sticker, emojis } = await getSticker(ctx, conversation);
     await ctx.api.addStickerToSet(ctx.from!.id, name, emojis, {
       png_sticker: sticker,
     });
     await ctx.reply("Sticker added!, send another sticker or /done to stop");
   } while (ctx.message?.text != "/done");
-  return;
+
+  return await ctx.reply(
+    `Sticker pack created!: \n https://t.me/addstickers/${name} \n\n`
+  );
 }
 
 async function addSticker(conversation: MyConversation, ctx: MyContext) {
   await ctx.reply("Send a sticker from your pack that you want to add");
   ctx = await conversation.waitFor(":sticker");
   const name = ctx.message?.sticker?.set_name!;
+  console.log(name);
 
   do {
-    await ctx.reply("Now, send a sticker or a photo to add into your pack");
-    ctx = await conversation.waitFor([":sticker", ":photo", ":text"]);
-
     const { sticker, emojis } = await getSticker(ctx, conversation);
+
     await ctx.api.addStickerToSet(ctx.from!.id, name, emojis, {
       png_sticker: sticker,
     });
     await ctx.reply("Sticker added!, send another sticker or /done to stop");
   } while (ctx.message?.text != "/done");
+
+  return await ctx.reply(`Stickers added to https://t.me/addstickers/${name}`);
 }
 
 export const bot = new Bot<MyContext>(BOT_TOKEN);
@@ -98,6 +99,12 @@ bot.use(createConversation(addSticker));
 
 bot.command("newpack", (ctx) => ctx.conversation.enter("createStickerPack"));
 bot.command("addsticker", (ctx) => ctx.conversation.enter("addSticker"));
+bot.command("cancel", (ctx) => {
+  if (ctx.conversation.active) {
+    ctx.conversation.exit();
+    ctx.reply("cancelled");
+  }
+});
 
 bot.command("start", (ctx) =>
   ctx.reply(
@@ -113,11 +120,11 @@ bot.api.setMyCommands([
 
 bot.catch(async (error) => {
   await error.ctx.reply("Something went wrong 🤐");
-  error.ctx.api.sendMessage(BOT_OWNER_ID, JSON.stringify({ error }, null, 2));
+  // error.ctx.api.sendMessage(BOT_OWNER_ID, JSON.stringify({ error }, null, 2));
   console.error(error);
 });
 
-// bot.start();
+bot.start();
 
 async function getSticker(ctx: MyContext, conversation: MyConversation) {
   let sticker: string | InputFile;
