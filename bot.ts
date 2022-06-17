@@ -105,7 +105,7 @@ bot.api.setMyCommands([
 // bot.command("myid", (ctx) => ctx.reply(ctx.from!.id.toString()));
 
 bot.catch(async (error) => {
-  await error.ctx.reply("Something went wrong");
+  await error.ctx.reply("Something went wrong 🤐");
   error.ctx.api.sendMessage(BOT_OWNER_ID, JSON.stringify({ error }, null, 2));
   console.error(error);
 });
