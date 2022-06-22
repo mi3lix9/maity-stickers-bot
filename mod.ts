@@ -1,4 +1,4 @@
-import { webhookCallback } from "https://deno.land/x/grammy@v1.8.3/mod.ts";
+import { webhookCallback } from "https://deno.land/x/grammy/mod.ts";
 import { serve } from "https://deno.land/x/sift@0.5.0/mod.ts";
 // You might modify this to the correct way to import your `Bot` object.
 
