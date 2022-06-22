@@ -1,104 +1,29 @@
+import { Bot, session } from "https://deno.land/x/grammy/mod.ts";
 import {
-  Bot,
-  Context,
-  InputFile,
-  session,
-  SessionFlavor,
-} from "https://deno.land/x/grammy@v1.8.3/mod.ts";
-import {
-  type Conversation,
-  type ConversationFlavor,
   conversations,
   createConversation,
-} from "https://deno.land/x/grammy_conversations@v0.6.2/mod.ts";
+} from "https://deno.land/x/grammy_conversations/mod.ts";
+import { hydrateFiles } from "https://deno.land/x/grammy_files/mod.ts";
+import { addStickerConversation } from "./addSticker.ts";
 
-import {
-  FileFlavor,
-  hydrateFiles,
-} from "https://deno.land/x/grammy_files@v1.0.4/mod.ts";
-import { BOT_OWNER_ID, BOT_TOKEN } from "./constants.ts";
-import { resizeImage } from "./resizeImage.ts";
-
-interface SessionData {
-  // sets: string[];
-}
-
-type MyContext = FileFlavor<Context> &
-  SessionFlavor<SessionData> &
-  ConversationFlavor;
-
-type MyConversation = Conversation<MyContext>;
-
-async function createStickerPack(conversation: MyConversation, ctx: MyContext) {
-  await ctx.reply("Send a title for your pack");
-  ctx = await conversation.waitFor(":text");
-  const title = ctx.message?.text!;
-
-  let name: string;
-  let isAvailable: boolean;
-  do {
-    await ctx.reply(
-      "Send a name for your pack (must be unique and without spaces)"
-    );
-    ctx = await conversation.waitFor(":text");
-    name = ctx.message?.text!;
-    isAvailable = !!(await bot.api.getStickerSet(name));
-  } while (name.includes(" ") && !isAvailable);
-
-  const getBot = await bot.api.getMe();
-  name += "_by_" + getBot.username;
-
-  const { emojis, sticker } = await getSticker(ctx, conversation);
-
-  await ctx.api.createNewStickerSet(ctx.from!.id, name!, title!, emojis!, {
-    png_sticker: sticker!,
-  });
-
-  await ctx.reply(
-    `Sticker pack created!: \n https://t.me/addstickers/${name} \n\n you can send more stickers, or send /done to stop`
-  );
-
-  do {
-    const { sticker, emojis } = await getSticker(ctx, conversation);
-    await ctx.api.addStickerToSet(ctx.from!.id, name, emojis, {
-      png_sticker: sticker,
-    });
-    await ctx.reply("Sticker added!, send another sticker or /done to stop");
-  } while (ctx.message?.text != "/done");
-
-  return await ctx.reply(
-    `Sticker pack created!: \n https://t.me/addstickers/${name} \n\n`
-  );
-}
-
-async function addSticker(conversation: MyConversation, ctx: MyContext) {
-  await ctx.reply("Send a sticker from your pack that you want to add");
-  ctx = await conversation.waitFor(":sticker");
-  const name = ctx.message?.sticker?.set_name!;
-  console.log(name);
-
-  do {
-    const { sticker, emojis } = await getSticker(ctx, conversation);
-
-    await ctx.api.addStickerToSet(ctx.from!.id, name, emojis, {
-      png_sticker: sticker,
-    });
-    await ctx.reply("Sticker added!, send another sticker or /done to stop");
-  } while (ctx.message?.text != "/done");
-
-  return await ctx.reply(`Stickers added to https://t.me/addstickers/${name}`);
-}
+import { BOT_TOKEN } from "./constants.ts";
+import { createStickerSetConversation } from "./createNewStickerPack.ts";
+import { MyContext } from "./types.ts";
 
 export const bot = new Bot<MyContext>(BOT_TOKEN);
 
 bot.api.config.use(hydrateFiles(bot.token));
 bot.use(session({ initial: () => ({}) }));
 bot.use(conversations());
-bot.use(createConversation(createStickerPack));
-bot.use(createConversation(addSticker));
+bot.use(createConversation(createStickerSetConversation));
+bot.use(createConversation(addStickerConversation));
 
-bot.command("newpack", (ctx) => ctx.conversation.enter("createStickerPack"));
-bot.command("addsticker", (ctx) => ctx.conversation.enter("addSticker"));
+bot.command("newpack", (ctx) =>
+  ctx.conversation.enter("createStickerSetConversation")
+);
+bot.command("addsticker", (ctx) =>
+  ctx.conversation.enter("addStickerConversation")
+);
 bot.command("cancel", (ctx) => {
   if (ctx.conversation.active) {
     ctx.conversation.exit();
@@ -118,31 +43,4 @@ bot.api.setMyCommands([
 ]);
 // bot.command("myid", (ctx) => ctx.reply(ctx.from!.id.toString()));
 
-bot.catch(async (error) => {
-  await error.ctx.reply("Something went wrong 🤐");
-  // error.ctx.api.sendMessage(BOT_OWNER_ID, JSON.stringify({ error }, null, 2));
-  console.error(error);
-});
-
-bot.start();
-
-async function getSticker(ctx: MyContext, conversation: MyConversation) {
-  let sticker: string | InputFile;
-  let emojis = "";
-
-  await ctx.reply("Send a sticker");
-  ctx = await conversation.waitFor([":sticker", ":photo"]);
-  if (ctx.message?.sticker) {
-    sticker = ctx.message?.sticker.file_id;
-  } else if (ctx.message?.photo) {
-    const { width, height } = ctx.message?.photo?.[0]!;
-    const file = await ctx.getFile();
-    sticker = await resizeImage(file.getUrl(), width, height);
-  }
-
-  await ctx.reply("Send emojis for this sticker");
-  ctx = await conversation.waitFor(":text");
-  emojis = ctx.message?.text!;
-
-  return { sticker: sticker!, emojis };
-}
+// bot.start();

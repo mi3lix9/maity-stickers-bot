@@ -1,0 +1,7 @@
+{
+  "imports": {
+    "grammy": "https://deno.land/x/grammy/mod.ts",
+    "@grammy/conversations": "https://deno.land/x/grammy_conversations/mod.ts",
+    "@grammy/files": "https://deno.land/x/grammy_files/mod.ts"
+  }
+}

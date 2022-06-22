@@ -1,5 +1,5 @@
-import { resize } from "https://deno.land/x/deno_image@0.0.4/index.ts";
-import { InputFile } from "https://deno.land/x/grammy@v1.8.3/platform.deno.ts";
+import { resize } from "https://deno.land/x/deno_image/index.ts";
+import { InputFile } from "https://deno.land/x/grammy/platform.deno.ts";
 
 export async function resizeImage(url: string, width: number, height: number) {
   const aspectRatio = width / height;
