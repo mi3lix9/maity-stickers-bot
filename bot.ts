@@ -4,21 +4,26 @@ import {
   createConversation,
 } from "https://deno.land/x/grammy_conversations/mod.ts";
 import { hydrateFiles } from "https://deno.land/x/grammy_files/mod.ts";
+import { freeStorage } from "https://deno.land/x/grammy_storages/free/src/mod.ts";
+
 import { addStickerConversation } from "./conversations/addSticker.ts";
 import { createStickerSetConversation } from "./conversations/createNewStickerPack.ts";
 
 import { BOT_TOKEN } from "./constants.ts";
 import { MyContext, SessionData } from "./types.ts";
 
-const initialSession = (): SessionData => ({
-  sets: new Set(),
-  fastMode: false,
-});
-
 export const bot = new Bot<MyContext>(BOT_TOKEN);
 
 bot.api.config.use(hydrateFiles(bot.token));
-bot.use(session({ initial: initialSession }));
+bot.use(
+  session({
+    initial: (): SessionData => ({
+      sets: new Set(),
+      fastMode: false,
+    }),
+    storage: freeStorage<SessionData>(bot.token),
+  })
+);
 bot.use(conversations());
 bot.use(createConversation(createStickerSetConversation));
 bot.use(createConversation(addStickerConversation));
@@ -48,4 +53,4 @@ bot.api.setMyCommands([
 ]);
 // bot.command("myid", (ctx) => ctx.reply(ctx.from!.id.toString()));
 
-// bot.start();
+bot.start();

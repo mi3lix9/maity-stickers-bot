@@ -1,15 +1,29 @@
-import { InputFile } from "https://deno.land/x/grammy/platform.deno.ts";
+import { InlineKeyboard } from "https://deno.land/x/grammy/mod.ts";
+import {
+  InputFile,
+  Message,
+} from "https://deno.land/x/grammy/platform.deno.ts";
 import { bot } from "../bot.ts";
 import type { MyConversation, MyContext } from "../types.ts";
 import { resizeImage } from "../utils/resizeImage.ts";
+
+type StickerSet = { title: string; name: string };
 
 export async function addStickerConversation(
   conversation: MyConversation,
   ctx: MyContext
 ) {
-  await ctx.reply("Choose a sticker pack");
-  ctx = await conversation.waitFor(":sticker");
-  const name = ctx.message?.sticker?.set_name!;
+  const sets = await getStickerSets(ctx);
+  if (sets.length === 0) {
+    return await ctx.reply(
+      "You don't have any sets yet, please create a new one using /newpack!"
+    );
+  }
+  const inline_keyboard = await getStickersInlineKeyboard(sets);
+  await ctx.reply("Choose a sticker pack", { reply_markup: inline_keyboard });
+  ctx = await conversation.waitFor("callback_query:data");
+  const name = ctx.callbackQuery?.data!;
+  await ctx.answerCallbackQuery();
 
   await ctx.reply("Ok! Please send a photo or a sticker you want");
   await addStickerToSet(conversation, ctx, name);
@@ -24,13 +38,12 @@ export async function addStickerToSet(
   conversation: MyConversation,
   ctx: MyContext,
   name: string
-): Promise<any> {
+): Promise<Message.TextMessage> {
   ctx = await conversation.waitFor(["::bot_command", ":sticker", ":photo"]);
 
   if (ctx.message?.text === "/done") {
     return await ctx.reply("Ok, done!");
   }
-
   if (!(ctx.message?.sticker || ctx.message?.photo)) {
     await ctx.reply("Send a sticker or a photo");
     ctx = await conversation.waitFor([":photo", ":sticker"]);
@@ -87,17 +100,34 @@ async function addStickerToSetUtil(
   }
 }
 
-// async function getTitleFromName(name: string) {
-//   const { title } = await bot.api.getStickerSet(name);
-//   return title;
-// }
+async function getTitleFromName(name: string) {
+  const { title } = await bot.api.getStickerSet(name);
+  return title;
+}
 
-// function getStickerSets(ctx: MyContext) {
-//   const sets: { title: string; name: string }[] = [];
-//   ctx.session.sets.forEach(async (name) => {
-//     const title = await getTitleFromName(name);
-//     sets.push({ title, name });
-//   });
+async function getStickerSets(ctx: MyContext) {
+  const sets: StickerSet[] = [];
+  if (ctx.session.sets.size === 0) return [];
 
-//   return sets;
-// }
+  for (const name of ctx.session.sets) {
+    try {
+      const title = await getTitleFromName(name);
+      sets.push({
+        title,
+        name,
+      });
+    } catch {
+      ctx.session.sets.delete(name);
+    }
+  }
+
+  return sets;
+}
+
+async function getStickersInlineKeyboard(sets: StickerSet[]) {
+  const keyboard = new InlineKeyboard();
+  sets.forEach((set) =>
+    keyboard.add({ text: set.title, callback_data: set.name })
+  );
+  return keyboard;
+}
