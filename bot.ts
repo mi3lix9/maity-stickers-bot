@@ -53,4 +53,4 @@ bot.api.setMyCommands([
 ]);
 // bot.command("myid", (ctx) => ctx.reply(ctx.from!.id.toString()));
 
-bot.start();
+// bot.start();
