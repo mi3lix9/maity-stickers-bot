@@ -1,6 +1,6 @@
 import { addStickerToSet, processSticker } from "./addSticker.ts";
-import { bot } from "./bot.ts";
-import { MyConversation, MyContext } from "./types.ts";
+import { bot } from "../bot.ts";
+import { MyConversation, MyContext } from "../types.ts";
 
 export async function createStickerSetConversation(
   conversation: MyConversation,
@@ -29,6 +29,7 @@ export async function createStickerSetConversation(
     `Sticker pack created!: \n https://t.me/addstickers/${name} \n\n you can send more stickers, or send /done to stop`
   );
 
+  ctx.session.sets.add(name);
   return await addStickerToSet(conversation, ctx, name);
 }
 
