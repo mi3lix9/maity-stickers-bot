@@ -20,10 +20,7 @@ bot.use(
       sets: new Set(),
       fastMode: false,
     }),
-    storage:
-      DENO_ENV === "PRODUCTION"
-        ? freeStorage<SessionData>(bot.token)
-        : undefined,
+    storage: freeStorage<SessionData>(bot.token),
   })
 );
 bot.use(conversations());
