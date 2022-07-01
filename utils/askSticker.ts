@@ -1,4 +1,5 @@
 import { InputFile } from "https://deno.land/x/grammy/mod.ts";
+import { BOT_TOKEN } from "../constants.ts";
 import { MyConversation, MyContext } from "../types.ts";
 import { resizeImage } from "./resizeImage.ts";
 
@@ -44,14 +45,13 @@ function checkEmoji(emoji: string) {
  * Resize sticker size to 512px
  * Corrently, it doesn't support resizing .webp stickers
  */
-export async function processSticker(
+async function processSticker(
   ctx: MyContext
 ): Promise<string | InputFile | undefined> {
   if (ctx.message?.sticker) {
     return ctx.message.sticker.file_id;
   }
   const file = await ctx.getFile();
-  console.log(file.getUrl());
 
   // const isImage = file.file_path?.endsWith(
   //   ".webp" || ".jpg" || ".png" || ".jpeg"
@@ -59,5 +59,11 @@ export async function processSticker(
   // if (!isImage) {
   //   return undefined;
   // }
-  return await resizeImage(file.getUrl());
+  console.log(file.getUrl());
+  console.log(file.file_path);
+
+  return await resizeImage(
+    // file.getUrl() ||
+    `https://api.telegram.org/file/bot${BOT_TOKEN}/${file.file_path}`
+  );
 }
