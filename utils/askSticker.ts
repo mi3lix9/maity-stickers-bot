@@ -8,7 +8,7 @@ export async function askSticker(
 ): Promise<{ sticker: string | InputFile; emojis: string }> {
   // ctx = await conversation.wait();
 
-  const sticker = await processSticker(ctx);
+  const sticker = await conversation.external(() => processSticker(ctx));
 
   if (!sticker) {
     await ctx.reply("I couldn't process your sticker, please try again");
