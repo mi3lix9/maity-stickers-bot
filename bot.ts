@@ -30,8 +30,14 @@ bot.use(conversations());
 bot.use(createConversation(createNewPack));
 bot.use(createConversation(addSticker));
 
-// bot.command("newpack", (ctx) => ctx.conversation.enter("createNewPack"));
-// bot.command("addsticker", (ctx) => ctx.conversation.enter("addSticker"));
+bot.command(
+  "newpack",
+  async (ctx) => await ctx.conversation.enter("createNewPack")
+);
+bot.command(
+  "addsticker",
+  async (ctx) => await ctx.conversation.enter("addSticker")
+);
 bot.command("delpack", async (ctx) => {
   await ctx.reply("You can delete your pack from the official @stickers bot ");
 });
