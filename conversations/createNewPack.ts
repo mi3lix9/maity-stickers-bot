@@ -20,21 +20,13 @@ export async function createNewPack(
   ctx = await conversation.wait();
   const { emojis, sticker } = await askSticker(conversation, ctx);
 
-  try {
-    await ctx.api.createNewStickerSet(ctx.from?.id!, name, title, emojis, {
-      png_sticker: sticker,
-    });
+  await ctx.api.createNewStickerSet(ctx.from?.id!, name, title, emojis, {
+    png_sticker: sticker,
+  });
 
-    ctx.session.sets.add(name);
-    await ctx.reply(
-      `Sticker added! send another sticker or send /done to stop.`
-    );
-    return await addSticker(conversation, ctx, name);
-  } catch (e) {
-    console.log(e);
-    await ctx.reply("Something went wrong, please try again");
-    return;
-  }
+  ctx.session.sets.add(name);
+  await ctx.reply(`Sticker added! send another sticker or send /done to stop.`);
+  return await addSticker(conversation, ctx, name);
 }
 
 async function askName(
