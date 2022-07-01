@@ -30,8 +30,8 @@ bot.use(conversations());
 bot.use(createConversation(createNewPack));
 bot.use(createConversation(addSticker));
 
-bot.command("newpack", (ctx) => ctx.conversation.enter("createNewPack"));
-bot.command("addsticker", (ctx) => ctx.conversation.enter("addSticker"));
+// bot.command("newpack", (ctx) => ctx.conversation.enter("createNewPack"));
+// bot.command("addsticker", (ctx) => ctx.conversation.enter("addSticker"));
 bot.command("delpack", async (ctx) => {
   await ctx.reply("You can delete your pack from the official @stickers bot ");
 });
@@ -48,7 +48,7 @@ bot.command("start", async (ctx) => {
     ctx.session.sets = new Set();
   }
   return await ctx.reply(
-    "Hello! I am a bot that helps you create sticker packs easily, please enter /newpack to start new pack or /addSticker to add sticker to your existing pack \n\n Please notice that, this sticker is still under development, so you might get unexpected results. Please report any bugs to @mi3lix9!"
+    "Hello! I am a bot that helps you create sticker packs easily, please enter /newpack to start new pack or /addSticker to add sticker to your existing pack \n\n Please notice that, this sticker is still under development, so you might get unexpected results. Please report any bugs to Ali @mi3lix9! "
   );
 });
 
