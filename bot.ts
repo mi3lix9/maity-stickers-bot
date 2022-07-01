@@ -59,6 +59,6 @@ bot.command("start", async (ctx) => {
 });
 
 bot.errorBoundary(async (error, next) => {
-  console.log(error);
+  console.error({ error, user: error.ctx.from });
   await error.ctx.reply("Something went wrong, please try again later.");
 });
