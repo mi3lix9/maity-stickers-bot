@@ -1,133 +1,85 @@
 import { InlineKeyboard } from "https://deno.land/x/grammy/mod.ts";
-import {
-  InputFile,
-  Message,
-} from "https://deno.land/x/grammy/platform.deno.ts";
-import { bot } from "../bot.ts";
+import { StickerSet } from "https://deno.land/x/grammy/platform.deno.ts";
 import type { MyConversation, MyContext } from "../types.ts";
-import { resizeImage } from "../utils/resizeImage.ts";
+import { askSticker } from "../utils/askSticker.ts";
 
-type StickerSet = { title: string; name: string };
-
-export async function addStickerConversation(
+export async function addSticker(
   conversation: MyConversation,
-  ctx: MyContext
-) {
-  const sets = await getStickerSets(ctx);
-  if (sets.length === 0) {
-    return await ctx.reply(
-      "You don't have any sets yet, please create a new one using /newpack!"
-    );
+  ctx: MyContext,
+  name?: string
+): Promise<void> {
+  if (!name) {
+    return await addStickerUtil(conversation, ctx);
   }
-  const inline_keyboard = await getStickersInlineKeyboard(sets);
-  await ctx.reply("Choose a sticker pack", { reply_markup: inline_keyboard });
+
+  ctx = await conversation.wait();
+
+  if (ctx.message?.text?.toLocaleLowerCase() === "/done") {
+    await ctx.reply(`Your sticker pack is: https://t.me/addstickers/${name}`);
+    return;
+  }
+
+  const { emojis, sticker } = await askSticker(conversation, ctx);
+
+  await ctx.api.addStickerToSet(ctx.from?.id!, name, emojis, {
+    png_sticker: sticker,
+  });
+
+  await ctx.reply(
+    "Sticker added to pack, send another sticker if you want, or send /done to stop."
+  );
+
+  return await addSticker(conversation, ctx, name);
+}
+
+async function addStickerUtil(conversation: MyConversation, ctx: MyContext) {
+  const packs = await getStickerPacks(ctx);
+
+  if (packs.length === 0) {
+    await ctx.reply(
+      "You don't have any packs, please create a new one by /newpack"
+    );
+    return;
+  }
+
+  const name = await askPack(conversation, ctx, packs);
+  await ctx.reply("Great! now send a sticker to add to your pack");
+
+  return await addSticker(conversation, ctx, name);
+}
+
+async function askPack(
+  conversation: MyConversation,
+  ctx: MyContext,
+  packs: StickerSet[]
+) {
+  const keyboard = new InlineKeyboard();
+  packs.forEach((pack) =>
+    keyboard.add({ text: pack.title, callback_data: pack.name })
+  );
+  await ctx.reply("Choose pack you want to add sticker to", {
+    reply_markup: keyboard,
+  });
+
   ctx = await conversation.waitFor("callback_query:data");
-  const name = ctx.callbackQuery?.data!;
-  await ctx.answerCallbackQuery();
-
-  await ctx.reply("Ok! Please send a photo or a sticker you want");
-  await addStickerToSet(conversation, ctx, name);
-
-  return await ctx.reply(`Stickers added to https://t.me/addstickers/${name}`);
+  const chosenPack = ctx.callbackQuery?.data!;
+  // await ctx.answerCallbackQuery(); // This function causes an error
+  await ctx.editMessageText(`You chose ${chosenPack}`);
+  return chosenPack;
 }
 
-/**
- * A recursion function for adding stickers to a set.
- */
-export async function addStickerToSet(
-  conversation: MyConversation,
-  ctx: MyContext,
-  name: string
-): Promise<Message.TextMessage> {
-  ctx = await conversation.waitFor(["::bot_command", ":sticker", ":photo"]);
+async function getStickerPacks(ctx: MyContext) {
+  const sets = ctx.session.sets;
 
-  if (ctx.message?.text === "/done") {
-    return await ctx.reply("Ok, done!");
-  }
-  if (!(ctx.message?.sticker || ctx.message?.photo)) {
-    await ctx.reply("Send a sticker or a photo");
-    ctx = await conversation.waitFor([":photo", ":sticker"]);
-  }
+  const packs: StickerSet[] = [];
 
-  const sticker = await processSticker(ctx);
-
-  await ctx.reply("Send emojis for this sticker");
-  ctx = await conversation.waitFor(":text");
-  const emojis = ctx.message?.text!;
-
-  const added = await addStickerToSetUtil(ctx, name, sticker, emojis);
-
-  if (!added) {
-    return await ctx.reply(
-      "Something went wrong! Please try again /addSticker"
-    );
-  }
-
-  await ctx.reply("Sticker added!, send another sticker or /done to stop.");
-  return addStickerToSet(conversation, ctx, name);
-}
-
-/**
- * Resize sticker size to 512px
- * Corrently, it doesn't support resizing .webp stickers
- */
-export async function processSticker(
-  ctx: MyContext
-): Promise<string | InputFile> {
-  if (ctx.message?.sticker) return ctx.message.sticker.file_id;
-
-  const { width, height } = ctx.message?.photo?.[0]!;
-  const file = await ctx.getFile();
-  return await resizeImage(file.getUrl(), width, height);
-}
-
-/**
- * Add stickers to sticker pack
- */
-async function addStickerToSetUtil(
-  ctx: MyContext,
-  name: string,
-  sticker: string | InputFile,
-  emojis: string
-) {
-  try {
-    await ctx.api.addStickerToSet(ctx.from!.id, name, emojis, {
-      png_sticker: sticker as any,
-    });
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-async function getTitleFromName(name: string) {
-  const { title } = await bot.api.getStickerSet(name);
-  return title;
-}
-
-async function getStickerSets(ctx: MyContext) {
-  const sets: StickerSet[] = [];
-  if (ctx.session.sets.size === 0) return [];
-
-  for (const name of ctx.session.sets) {
+  for (const set of sets) {
     try {
-      const title = await getTitleFromName(name);
-      sets.push({
-        title,
-        name,
-      });
-    } catch {
-      ctx.session.sets.delete(name);
+      const pack = await ctx.api.getStickerSet(set);
+      packs.push(pack);
+    } catch (e) {
+      console.error(e);
     }
   }
-
-  return sets;
-}
-
-async function getStickersInlineKeyboard(sets: StickerSet[]) {
-  const keyboard = new InlineKeyboard();
-  sets.forEach((set) =>
-    keyboard.add({ text: set.title, callback_data: set.name })
-  );
-  return keyboard;
+  return packs;
 }
