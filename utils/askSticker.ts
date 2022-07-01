@@ -1,6 +1,6 @@
 import { InputFile } from "https://deno.land/x/grammy/mod.ts";
 import { MyConversation, MyContext } from "../types.ts";
-import { processSticker } from "./resizeImage.ts";
+import { resizeImage } from "./resizeImage.ts";
 
 export async function askSticker(
   conversation: MyConversation,
@@ -8,7 +8,7 @@ export async function askSticker(
 ): Promise<{ sticker: string | InputFile; emojis: string }> {
   // ctx = await conversation.wait();
 
-  const sticker = await conversation.external(() => processSticker(ctx));
+  const sticker = await processSticker(conversation, ctx);
 
   if (!sticker) {
     await ctx.reply("I couldn't process your sticker, please try again");
@@ -38,4 +38,26 @@ function checkEmoji(emoji: string) {
 
   const removeEmoji = emoji.replace(regex, "");
   return !removeEmoji.length;
+}
+
+/**
+ * Resize sticker size to 512px
+ * Corrently, it doesn't support resizing .webp stickers
+ */
+export async function processSticker(
+  conversation: MyConversation,
+  ctx: MyContext
+): Promise<string | InputFile | undefined> {
+  if (ctx.message?.sticker) {
+    return ctx.message.sticker.file_id;
+  }
+  const file = await ctx.getFile();
+
+  // const isImage = file.file_path?.endsWith(
+  //   ".webp" || ".jpg" || ".png" || ".jpeg"
+  // );
+  // if (!isImage) {
+  //   return undefined;
+  // }
+  return await conversation.external(() => resizeImage(file.getUrl()));
 }
