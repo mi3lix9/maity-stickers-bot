@@ -59,8 +59,6 @@ async function processSticker(
   // if (!isImage) {
   //   return undefined;
   // }
-  console.log(file.getUrl());
-  console.log(file.file_path);
 
   return await resizeImage(
     // file.getUrl() ||
