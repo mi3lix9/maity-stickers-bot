@@ -8,7 +8,7 @@ export async function askSticker(
 ): Promise<{ sticker: string | InputFile; emojis: string }> {
   // ctx = await conversation.wait();
 
-  const sticker = await processSticker(conversation, ctx);
+  const sticker = await processSticker(ctx);
 
   if (!sticker) {
     await ctx.reply("I couldn't process your sticker, please try again");
@@ -45,13 +45,13 @@ function checkEmoji(emoji: string) {
  * Corrently, it doesn't support resizing .webp stickers
  */
 export async function processSticker(
-  conversation: MyConversation,
   ctx: MyContext
 ): Promise<string | InputFile | undefined> {
   if (ctx.message?.sticker) {
     return ctx.message.sticker.file_id;
   }
   const file = await ctx.getFile();
+  console.log(file.getUrl());
 
   // const isImage = file.file_path?.endsWith(
   //   ".webp" || ".jpg" || ".png" || ".jpeg"
@@ -59,5 +59,5 @@ export async function processSticker(
   // if (!isImage) {
   //   return undefined;
   // }
-  return await conversation.external(() => resizeImage(file.getUrl()));
+  return await resizeImage(file.getUrl());
 }
