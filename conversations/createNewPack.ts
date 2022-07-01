@@ -61,7 +61,7 @@ async function askName(
 
   if (await exists(name, ctx)) {
     await ctx.reply("This pack already exists, please send another name");
-    return askName(conversation, ctx);
+    return await askName(conversation, ctx);
   }
 
   return name;

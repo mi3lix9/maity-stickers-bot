@@ -10,7 +10,6 @@ import { BOT_TOKEN, DENO_ENV } from "./constants.ts";
 import { addSticker } from "./conversations/addSticker.ts";
 import { createNewPack } from "./conversations/createNewPack.ts";
 import { MyContext, SessionData } from "./types.ts";
-import { processSticker } from "./utils/resizeImage.ts";
 
 export const bot = new Bot<MyContext>(BOT_TOKEN);
 

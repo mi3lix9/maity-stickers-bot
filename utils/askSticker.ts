@@ -12,7 +12,7 @@ export async function askSticker(
 
   if (!sticker) {
     await ctx.reply("I couldn't process your sticker, please try again");
-    return askSticker(conversation, ctx);
+    return await askSticker(conversation, ctx);
   }
 
   await ctx.reply("Great! Now send me emojis for your sticker");
