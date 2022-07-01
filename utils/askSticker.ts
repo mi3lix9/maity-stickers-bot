@@ -8,17 +8,21 @@ export async function askSticker(
   ctx: MyContext
 ): Promise<{ sticker: string | InputFile; emojis: string }> {
   // ctx = await conversation.wait();
+  try {
+    const sticker = await processSticker(ctx);
 
-  const sticker = await processSticker(ctx);
+    if (!sticker) {
+      await ctx.reply("I couldn't process your sticker, please try again");
+      return await askSticker(conversation, ctx);
+    }
 
-  if (!sticker) {
-    await ctx.reply("I couldn't process your sticker, please try again");
-    return await askSticker(conversation, ctx);
+    await ctx.reply("Great! Now send me emojis for your sticker");
+    const emojis = await askEmojis(conversation, ctx);
+    return { sticker, emojis };
+  } catch (error) {
+    await ctx.reply("Something went wrong");
+    throw new Error(error);
   }
-
-  await ctx.reply("Great! Now send me emojis for your sticker");
-  const emojis = await askEmojis(conversation, ctx);
-  return { sticker, emojis };
 }
 
 async function askEmojis(
