@@ -51,3 +51,8 @@ bot.command("start", async (ctx) => {
     "Hello! I am a bot that helps you create sticker packs easily, please enter /newpack to start new pack or /addSticker to add sticker to your existing pack \n\n Please notice that, this sticker is still under development, so you might get unexpected results. Please report any bugs to @mi3lix9!"
   );
 });
+
+bot.errorBoundary(async (error, next) => {
+  console.log(error);
+  await error.ctx.reply("Something went wrong, please try again later.");
+});
