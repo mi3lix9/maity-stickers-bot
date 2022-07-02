@@ -10,7 +10,7 @@ export async function resizeImage(url: string) {
   const height = image.height >= image.width ? 512 : 512 / aspectRatio;
   image.resize(width, height);
 
-  const newImage = await image.encode();
+  const newImage = await image.encode(9);
 
   return new InputFile(newImage);
 }

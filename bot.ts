@@ -10,6 +10,7 @@ import { BOT_TOKEN, DENO_ENV } from "./constants.ts";
 import { addSticker } from "./conversations/addSticker.ts";
 import { createNewPack } from "./conversations/createNewPack.ts";
 import { MyContext, SessionData } from "./types.ts";
+import { processSticker } from "./utils/askSticker.ts";
 
 export const bot = new Bot<MyContext>(BOT_TOKEN);
 // const storage =
@@ -56,6 +57,15 @@ bot.command("start", async (ctx) => {
   return await ctx.reply(
     "Hello! I am a bot that helps you create sticker packs easily, please enter /newpack to start new pack or /addSticker to add sticker to your existing pack \n\n Please notice that, this sticker is still under development, so you might get unexpected results. Please report any bugs to Ali @mi3lix9! "
   );
+});
+
+bot.use(async (ctx, next) => {
+  if (typeof ctx.session.sets === "undefined") {
+    ctx.session.sets = new Set();
+    ctx.session.conversation = undefined;
+  }
+
+  await next();
 });
 
 bot.errorBoundary(async (error, next) => {

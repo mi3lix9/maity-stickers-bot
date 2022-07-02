@@ -45,7 +45,7 @@ function checkEmoji(emoji: string) {
  * Resize sticker size to 512px
  * Corrently, it doesn't support resizing .webp stickers
  */
-async function processSticker(
+export async function processSticker(
   ctx: MyContext
 ): Promise<string | InputFile | undefined> {
   if (ctx.message?.sticker) {
