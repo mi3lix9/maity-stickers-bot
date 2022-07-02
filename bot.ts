@@ -12,8 +12,8 @@ import { createNewPack } from "./conversations/createNewPack.ts";
 import { MyContext, SessionData } from "./types.ts";
 
 export const bot = new Bot<MyContext>(BOT_TOKEN);
-const storage =
-  DENO_ENV === "PRODUCTION" ? freeStorage<SessionData>(bot.token) : undefined;
+// const storage =
+//   DENO_ENV === "PRODUCTION" ? freeStorage<SessionData>(bot.token) : undefined;
 
 // bot.api.config.use(hydrateFiles(bot.token));
 bot.use(
@@ -22,21 +22,22 @@ bot.use(
       sets: new Set(),
       fastMode: false,
     }),
-    storage,
+    // storage,
   })
 );
+
 bot.use(conversations());
 bot.use(createConversation(createNewPack));
 bot.use(createConversation(addSticker));
 
-// bot.command(
-//   "newpack",
-//   async (ctx) => await ctx.conversation.enter("createNewPack")
-// );
-// bot.command(
-//   "addsticker",
-//   async (ctx) => await ctx.conversation.enter("addSticker")
-// );
+bot.command(
+  "newpack",
+  async (ctx) => await ctx.conversation.enter("createNewPack")
+);
+bot.command(
+  "addsticker",
+  async (ctx) => await ctx.conversation.enter("addSticker")
+);
 bot.command("delpack", async (ctx) => {
   await ctx.reply("You can delete your pack from the official @stickers bot ");
 });
