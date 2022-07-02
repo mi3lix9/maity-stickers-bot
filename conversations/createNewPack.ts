@@ -14,7 +14,7 @@ export async function createNewPack(
   const name = await askName(conversation, ctx);
   console.log(ctx.session);
   // ctx.session.sets.add(name);
-  ctx.session.newSets.push(name);
+  ctx.session.sets.push(name);
 
   await ctx.reply(
     "Great! Now send me a photo or a sticker. Don't worry, I will resize it to be compatible with Telegram! :)"

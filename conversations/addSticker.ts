@@ -70,7 +70,7 @@ async function askPack(
 
 async function getStickerPacks(ctx: MyContext) {
   // const sets = ctx.session.sets;
-  const sets = ctx.session.newSets;
+  const sets = ctx.session.sets;
 
   const packs: StickerSet[] = [];
 
@@ -79,6 +79,8 @@ async function getStickerPacks(ctx: MyContext) {
       const pack = await ctx.api.getStickerSet(set);
       packs.push(pack);
     } catch (e) {
+      const index = sets.indexOf(set);
+      sets.splice(index, 1);
       console.error(e);
     }
   }

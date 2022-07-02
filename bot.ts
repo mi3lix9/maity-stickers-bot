@@ -3,7 +3,6 @@ import {
   conversations,
   createConversation,
 } from "https://deno.land/x/grammy_conversations/mod.ts";
-// import { hydrateFiles } from "https://deno.land/x/grammy_files/mod.ts";
 import { freeStorage } from "https://deno.land/x/grammy_storages/free/src/mod.ts";
 
 import { BOT_TOKEN, DENO_ENV } from "./constants.ts";
@@ -15,35 +14,17 @@ export const bot = new Bot<MyContext>(BOT_TOKEN);
 const storage =
   DENO_ENV === "PRODUCTION" ? freeStorage<SessionData>(bot.token) : undefined;
 
-// bot.api.config.use(hydrateFiles(bot.token));
 bot.use(
   session({
     initial: (): SessionData => ({
-      sets: new Set(),
-      newSets: [],
+      sets: [],
       fastMode: false,
     }),
     storage,
   })
 );
 
-// bot.use(
-//   async (ctx, next) => {
-//     // if (typeof ctx.session.sets === "undefined") {
-//     //   ctx.session.sets = new Set();
-//     delete ctx.session.conversation;
-//     await next();
-//   }
-
-//   // if (typeof (await ctx.getFile()) !== "function") {
-//   //   ctx.session.conversation = undefined;
-
-//   //   await ctx.reply("Something wrong happend, please try again");
-//   // }
-//   // }
-// );
-
-bot.command("cancel", (ctx, next) => {
+bot.command("cancel", (ctx) => {
   delete ctx.session.conversation;
 });
 
@@ -64,10 +45,6 @@ bot.command("delpack", async (ctx) => {
 });
 
 bot.command("start", async (ctx) => {
-  if (ctx.session.sets === undefined) {
-    ctx.session.sets = new Set();
-  }
-
   return await ctx.reply(
     "Hello! I am a bot that helps you create sticker packs easily, please enter /newpack to start new pack or /addSticker to add sticker to your existing pack \n\n Please notice that, this sticker is still under development, so you might get unexpected results. Please report any bugs to Ali @mi3lix9! "
   );
@@ -80,8 +57,7 @@ bot.command("log", async (ctx, next) => {
 
 bot.command("resetbot", (ctx) => {
   ctx.session = {
-    sets: new Set(),
-    newSets: [],
+    sets: [],
     fastMode: false,
   };
   return ctx.reply("Bot reset");
