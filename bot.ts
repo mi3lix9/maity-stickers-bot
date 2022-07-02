@@ -27,25 +27,29 @@ bot.use(
   })
 );
 
+// bot.use(
+//   async (ctx, next) => {
+//     // if (typeof ctx.session.sets === "undefined") {
+//     //   ctx.session.sets = new Set();
+//     delete ctx.session.conversation;
+//     await next();
+//   }
+
+//   // if (typeof (await ctx.getFile()) !== "function") {
+//   //   ctx.session.conversation = undefined;
+
+//   //   await ctx.reply("Something wrong happend, please try again");
+//   // }
+//   // }
+// );
+
+bot.command("cancel", (ctx, next) => {
+  delete ctx.session.conversation;
+});
+
 bot.use(conversations());
 bot.use(createConversation(createNewPack));
 bot.use(createConversation(addSticker));
-
-bot.use(
-  async (ctx, next) => {
-    // if (typeof ctx.session.sets === "undefined") {
-    //   ctx.session.sets = new Set();
-    delete ctx.session.conversation;
-    await next();
-  }
-
-  // if (typeof (await ctx.getFile()) !== "function") {
-  //   ctx.session.conversation = undefined;
-
-  //   await ctx.reply("Something wrong happend, please try again");
-  // }
-  // }
-);
 
 bot.command(
   "newpack",
@@ -57,13 +61,6 @@ bot.command(
 );
 bot.command("delpack", async (ctx) => {
   await ctx.reply("You can delete your pack from the official @stickers bot ");
-});
-
-bot.command("cancel", (ctx) => {
-  if (ctx.conversation.active) {
-    ctx.conversation.exit();
-    ctx.reply("cancelled");
-  }
 });
 
 bot.command("start", async (ctx) => {
