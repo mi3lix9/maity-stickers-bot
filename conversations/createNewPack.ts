@@ -12,6 +12,8 @@ export async function createNewPack(
 
   await ctx.reply("Send name of the pack");
   const name = await askName(conversation, ctx);
+  console.log(ctx.session);
+  ctx.session.sets.add(name);
 
   await ctx.reply(
     "Great! Now send me a photo or a sticker. Don't worry, I will resize it to be compatible with Telegram! :)"
@@ -24,8 +26,6 @@ export async function createNewPack(
     png_sticker: sticker,
   });
 
-  console.log(ctx.session);
-  ctx.session.sets.add(name);
   await ctx.reply(`Sticker added! send another sticker or send /done to stop.`);
   return await addSticker(conversation, ctx, name);
 }
