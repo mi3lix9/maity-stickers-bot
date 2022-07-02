@@ -69,7 +69,8 @@ async function askPack(
 }
 
 async function getStickerPacks(ctx: MyContext) {
-  const sets = ctx.session.sets;
+  // const sets = ctx.session.sets;
+  const sets = ctx.session.newSets;
 
   const packs: StickerSet[] = [];
 

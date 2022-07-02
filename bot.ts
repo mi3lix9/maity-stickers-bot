@@ -10,7 +10,6 @@ import { BOT_TOKEN, DENO_ENV } from "./constants.ts";
 import { addSticker } from "./conversations/addSticker.ts";
 import { createNewPack } from "./conversations/createNewPack.ts";
 import { MyContext, SessionData } from "./types.ts";
-import { processSticker } from "./utils/askSticker.ts";
 
 export const bot = new Bot<MyContext>(BOT_TOKEN);
 const storage =
@@ -21,6 +20,7 @@ bot.use(
   session({
     initial: (): SessionData => ({
       sets: new Set(),
+      newSets: [],
       fastMode: false,
     }),
     storage,
@@ -81,6 +81,7 @@ bot.command("log", async (ctx, next) => {
 bot.command("resetbot", (ctx) => {
   ctx.session = {
     sets: new Set(),
+    newSets: [],
     fastMode: false,
   };
   return ctx.reply("Bot reset");

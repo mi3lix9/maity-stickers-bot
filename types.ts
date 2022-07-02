@@ -10,6 +10,7 @@ export interface SessionData {
    * set of sticker sets' names
    */
   sets: Set<string>;
+  newSets: string[];
   /**
    * fast mode enable users to add stickers automatically to special packs
    * without the need to add title,name, or emojies to the set.
