@@ -13,8 +13,9 @@ import { MyContext, SessionData } from "./types.ts";
 import { processSticker } from "./utils/askSticker.ts";
 
 export const bot = new Bot<MyContext>(BOT_TOKEN);
-const storage =
-  DENO_ENV === "PRODUCTION" ? freeStorage<SessionData>(bot.token) : undefined;
+// const storage =
+//   DENO_ENV === "PRODUCTION" ? freeStorage<SessionData>(bot.token) : undefined;
+const storage = freeStorage<SessionData>(bot.token);
 
 // bot.api.config.use(hydrateFiles(bot.token));
 bot.use(
