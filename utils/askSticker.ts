@@ -1,4 +1,5 @@
 import { InputFile } from "https://deno.land/x/grammy/mod.ts";
+import { BOT_TOKEN } from "../constants.ts";
 import { MyConversation, MyContext } from "../types.ts";
 import { resizeImage } from "./resizeImage.ts";
 
@@ -51,15 +52,15 @@ async function processSticker(
     return ctx.message.sticker.file_id;
   }
   const file = await ctx.getFile();
-
+  const filePath = `https://api.telegram.org/file/bot${BOT_TOKEN}/${file.file_path}`;
   // const isImage = file.file_path?.endsWith(
   //   ".webp" || ".jpg" || ".png" || ".jpeg"
   // );
   // if (!isImage) {
   //   return undefined;
   // }
-  console.log(file.getUrl());
-  console.log(file.file_path);
+  // console.log(file.getUrl());
+  // console.log(file.file_path);
 
-  return await resizeImage(file.getUrl());
+  return await resizeImage(filePath);
 }

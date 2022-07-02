@@ -3,7 +3,7 @@ import type {
   Conversation,
   ConversationFlavor,
 } from "https://deno.land/x/grammy_conversations/mod.ts";
-import type { FileFlavor } from "https://deno.land/x/grammy_files/mod.ts";
+// import type { FileFlavor } from "https://deno.land/x/grammy_files/mod.ts";
 
 export interface SessionData {
   /**
@@ -19,7 +19,7 @@ export interface SessionData {
   fastMode: boolean;
 }
 
-export type MyContext = FileFlavor<Context> &
+export type MyContext = Context &
   SessionFlavor<SessionData> &
   ConversationFlavor;
 

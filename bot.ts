@@ -3,7 +3,7 @@ import {
   conversations,
   createConversation,
 } from "https://deno.land/x/grammy_conversations/mod.ts";
-import { hydrateFiles } from "https://deno.land/x/grammy_files/mod.ts";
+// import { hydrateFiles } from "https://deno.land/x/grammy_files/mod.ts";
 import { freeStorage } from "https://deno.land/x/grammy_storages/free/src/mod.ts";
 
 import { BOT_TOKEN, DENO_ENV } from "./constants.ts";
@@ -12,15 +12,17 @@ import { createNewPack } from "./conversations/createNewPack.ts";
 import { MyContext, SessionData } from "./types.ts";
 
 export const bot = new Bot<MyContext>(BOT_TOKEN);
+const storage =
+  DENO_ENV === "PRODUCTION" ? freeStorage<SessionData>(bot.token) : undefined;
 
-bot.api.config.use(hydrateFiles(bot.token));
+// bot.api.config.use(hydrateFiles(bot.token));
 bot.use(
   session({
     initial: (): SessionData => ({
       sets: new Set(),
       fastMode: false,
     }),
-    storage: freeStorage<SessionData>(bot.token),
+    storage,
   })
 );
 bot.use(conversations());
