@@ -37,7 +37,7 @@ bot.use(async (ctx, next) => {
     ctx.session.conversation = undefined;
   }
 
-  if (typeof (await (ctx as any).getFile()).getPath() === "undefined") {
+  if (typeof (await ctx.getFile()) !== "function") {
     ctx.session.conversation = undefined;
 
     await ctx.reply("Something wrong happend, please try again");
