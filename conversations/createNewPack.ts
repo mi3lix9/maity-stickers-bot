@@ -24,6 +24,7 @@ export async function createNewPack(
     png_sticker: sticker,
   });
 
+  console.log(ctx.session);
   ctx.session.sets.add(name);
   await ctx.reply(`Sticker added! send another sticker or send /done to stop.`);
   return await addSticker(conversation, ctx, name);
