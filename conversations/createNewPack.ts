@@ -6,6 +6,13 @@ export async function createNewPack(
   conversation: MyConversation,
   ctx: MyContext
 ) {
+  if (typeof ctx.session.sets.push !== "function") {
+    await ctx.reply(
+      "Error: session.sets is not a set. Bot developer is aware of this, and trying to fix it as fast as he can, thanks."
+    );
+    return;
+  }
+
   await ctx.reply("Send title of the pack");
   ctx = await conversation.wait();
   const title = ctx.message?.text!;
@@ -13,8 +20,6 @@ export async function createNewPack(
   await ctx.reply("Send name of the pack");
   const name = await askName(conversation, ctx);
   console.log(ctx.session);
-  // ctx.session.sets.add(name);
-  ctx.session.sets.push(name);
 
   await ctx.reply(
     "Great! Now send me a photo or a sticker. Don't worry, I will resize it to be compatible with Telegram! :)"
@@ -26,6 +31,8 @@ export async function createNewPack(
   await ctx.api.createNewStickerSet(ctx.from?.id!, name, title, emojis, {
     png_sticker: sticker,
   });
+  // ctx.session.sets.add(name);
+  ctx.session.sets.push(name);
 
   await ctx.reply(`Sticker added! send another sticker or send /done to stop.`);
   return await addSticker(conversation, ctx, name);
