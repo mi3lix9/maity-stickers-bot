@@ -13,9 +13,8 @@ import { MyContext, SessionData } from "./types.ts";
 import { processSticker } from "./utils/askSticker.ts";
 
 export const bot = new Bot<MyContext>(BOT_TOKEN);
-// const storage =
-//   DENO_ENV === "PRODUCTION" ? freeStorage<SessionData>(bot.token) : undefined;
-const storage = freeStorage<SessionData>(bot.token);
+const storage =
+  DENO_ENV === "PRODUCTION" ? freeStorage<SessionData>(bot.token) : undefined;
 
 // bot.api.config.use(hydrateFiles(bot.token));
 bot.use(
@@ -77,6 +76,14 @@ bot.command("start", async (ctx) => {
 bot.command("log", async (ctx, next) => {
   await ctx.reply(JSON.stringify(ctx.session.sets));
   await ctx.reply(typeof ctx.session.sets);
+});
+
+bot.command("resetbot", (ctx) => {
+  ctx.session = {
+    sets: new Set(),
+    fastMode: false,
+  };
+  return ctx.reply("Bot reset");
 });
 
 bot.errorBoundary(async (error, next) => {
