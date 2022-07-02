@@ -67,9 +67,15 @@ bot.command("start", async (ctx) => {
   if (ctx.session.sets === undefined) {
     ctx.session.sets = new Set();
   }
+
   return await ctx.reply(
     "Hello! I am a bot that helps you create sticker packs easily, please enter /newpack to start new pack or /addSticker to add sticker to your existing pack \n\n Please notice that, this sticker is still under development, so you might get unexpected results. Please report any bugs to Ali @mi3lix9! "
   );
+});
+
+bot.command("log", async (ctx, next) => {
+  await ctx.reply(JSON.stringify(ctx.session.sets));
+  await ctx.reply(typeof ctx.session.sets);
 });
 
 bot.errorBoundary(async (error, next) => {
