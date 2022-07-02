@@ -31,18 +31,20 @@ bot.use(conversations());
 bot.use(createConversation(createNewPack));
 bot.use(createConversation(addSticker));
 
-bot.use(async (ctx, next) => {
-  if (typeof ctx.session.sets === "undefined") {
-    ctx.session.sets = new Set();
+bot.use(
+  async (ctx, next) => {
+    // if (typeof ctx.session.sets === "undefined") {
+    //   ctx.session.sets = new Set();
     ctx.session.conversation = undefined;
   }
 
-  if (typeof (await ctx.getFile()) !== "function") {
-    ctx.session.conversation = undefined;
+  // if (typeof (await ctx.getFile()) !== "function") {
+  //   ctx.session.conversation = undefined;
 
-    await ctx.reply("Something wrong happend, please try again");
-  }
-});
+  //   await ctx.reply("Something wrong happend, please try again");
+  // }
+  // }
+);
 
 bot.command(
   "newpack",
