@@ -53,6 +53,7 @@ async function processSticker(
   }
   const file = await ctx.getFile();
   const filePath = `https://api.telegram.org/file/bot${BOT_TOKEN}/${file.file_path}`;
+
   // const isImage = file.file_path?.endsWith(
   //   ".webp" || ".jpg" || ".png" || ".jpeg"
   // );
