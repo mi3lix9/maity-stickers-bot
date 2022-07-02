@@ -35,7 +35,8 @@ bot.use(
   async (ctx, next) => {
     // if (typeof ctx.session.sets === "undefined") {
     //   ctx.session.sets = new Set();
-    ctx.session.conversation = undefined;
+    delete ctx.session.conversation;
+    await next();
   }
 
   // if (typeof (await ctx.getFile()) !== "function") {
