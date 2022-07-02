@@ -31,6 +31,19 @@ bot.use(conversations());
 bot.use(createConversation(createNewPack));
 bot.use(createConversation(addSticker));
 
+bot.use(async (ctx, next) => {
+  if (typeof ctx.session.sets === "undefined") {
+    ctx.session.sets = new Set();
+    ctx.session.conversation = undefined;
+  }
+
+  if (typeof (await (ctx as any).getFile()).getPath() === "undefined") {
+    ctx.session.conversation = undefined;
+
+    await ctx.reply("Something wrong happend, please try again");
+  }
+});
+
 bot.command(
   "newpack",
   async (ctx) => await ctx.conversation.enter("createNewPack")
@@ -57,15 +70,6 @@ bot.command("start", async (ctx) => {
   return await ctx.reply(
     "Hello! I am a bot that helps you create sticker packs easily, please enter /newpack to start new pack or /addSticker to add sticker to your existing pack \n\n Please notice that, this sticker is still under development, so you might get unexpected results. Please report any bugs to Ali @mi3lix9! "
   );
-});
-
-bot.use(async (ctx, next) => {
-  if (typeof ctx.session.sets === "undefined") {
-    ctx.session.sets = new Set();
-    ctx.session.conversation = undefined;
-  }
-
-  await next();
 });
 
 bot.errorBoundary(async (error, next) => {
