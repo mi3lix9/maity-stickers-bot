@@ -1,5 +1,5 @@
-import { InputFile } from "https://deno.land/x/grammy/mod.ts";
-import { Image } from "https://deno.land/x/imagescript/mod.ts";
+import { InputFile } from "grammy";
+import { Image } from "imagescript";
 
 export async function resizeImage(url: string) {
   const response = await fetch(url);

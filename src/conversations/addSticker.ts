@@ -1,5 +1,5 @@
-import { InlineKeyboard } from "https://deno.land/x/grammy/mod.ts";
-import { StickerSet } from "https://deno.land/x/grammy/platform.deno.ts";
+import { InlineKeyboard } from "grammy";
+import { StickerSet } from "@grammy/types";
 import type { MyConversation, MyContext } from "../types.ts";
 import { askSticker } from "../utils/askSticker.ts";
 

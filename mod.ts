@@ -1,41 +1,24 @@
-import { webhookCallback } from "https://deno.land/x/grammy/mod.ts";
-import { serve } from "https://deno.land/x/sift@0.5.0/mod.ts";
-// You might modify this to the correct way to import your `Bot` object.
+import { webhookCallback } from "https://deno.land/x/grammy@v1.9.2/mod.ts";
+import { Application, Router } from "https://deno.land/x/oak/mod.ts";
+import { bot } from "./src/bot.ts";
 
-import { BOT_TOKEN, DENO_ENV } from "./constants.ts";
-import { bot } from "./bot.ts";
+const token = Deno.env.get("BOT_TOKEN");
 
-switch (DENO_ENV) {
-  case "PRODUCTION":
-    webhookApp();
-    console.log("Bot is started using Webhooks.");
-    break;
-  case "DEVELOPMENT":
-  default:
-    console.log("Bot is started using Long Pool.");
-    bot.catch(async (error) => {
-      await error.ctx.reply(error.message);
-      console.log(error.message);
-    });
-    await bot.start();
-}
+const app = new Application();
+const router = new Router();
 
-function webhookApp() {
-  const handleUpdate = webhookCallback(bot, "std/http");
+router.post("/" + token, webhookCallback(bot, "oak"));
+router.use(() => new Response("Hello world!"));
 
-  serve({
-    ["/" + BOT_TOKEN]: async (req) => {
-      if (req.method == "POST") {
-        try {
-          return await handleUpdate(req);
-        } catch (err) {
-          console.error(err);
-        }
-      }
-      return new Response();
-    },
-    "/": () => {
-      return new Response("Hello world!");
-    },
-  });
-}
+app.use(router.routes());
+app.use(router.allowedMethods());
+
+app.addEventListener("error", (e) => {
+  console.error("ERROR: ", e.error);
+});
+
+app.addEventListener("listen", (e) => {
+  console.log("Bot is started using Webhooks at: ", e.hostname);
+});
+
+await app.listen({ hostname: "localhost", port: 8080 });
