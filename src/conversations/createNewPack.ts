@@ -23,9 +23,7 @@ export async function createNewPack(
     await ctx.api.createNewStickerSet(ctx.from?.id!, name, title, emojis, {
       png_sticker: sticker,
     });
-
-    console.log(ctx.session.sets);
-    ctx.session.sets.push(name);
+    conversation.external(() => ctx.session.sets.push(name));
     await ctx.reply(
       `Sticker added! send another sticker or send /done to stop.`
     );
