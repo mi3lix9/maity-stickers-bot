@@ -35,6 +35,7 @@ bot.command("cancel", (ctx) => {
 bot.use(conversations());
 
 bot.command("cancel", (ctx) => {
+  delete ctx.session.conversation; // This code should be deleted after fixing all problems
   ctx.conversation.exit();
   return ctx.reply("Canceled.");
 });
