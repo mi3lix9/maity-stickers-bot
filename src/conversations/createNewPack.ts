@@ -6,13 +6,6 @@ export async function createNewPack(
   conversation: MyConversation,
   ctx: MyContext
 ) {
-  if (typeof ctx.session.sets.push !== "function") {
-    await ctx.reply(
-      "Error: session.sets is not a set. Bot developer is aware of this, and trying to fix it as fast as he can, thanks."
-    );
-    return;
-  }
-
   await ctx.reply("Send title of the pack");
   ctx = await conversation.wait();
   const title = ctx.message?.text!;
@@ -31,8 +24,7 @@ export async function createNewPack(
   await ctx.api.createNewStickerSet(ctx.from?.id!, name, title, emojis, {
     png_sticker: sticker,
   });
-  // ctx.session.sets.add(name);
-  ctx.session.sets.push(name);
+  // ctx.session.sets.push(name);
 
   await ctx.reply(`Sticker added! send another sticker or send /done to stop.`);
   return await addSticker(conversation, ctx, name);
@@ -78,8 +70,7 @@ async function askName(
 
 async function exists(name: string, ctx: MyContext): Promise<boolean> {
   try {
-    await ctx.api.getStickerSet(name);
-    return true;
+    return !!(await ctx.api.getStickerSet(name));
   } catch {
     return false;
   }
