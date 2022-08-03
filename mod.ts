@@ -34,13 +34,13 @@ app.use(async (ctx, next) => {
       
 
       await botCtx.reply(error.message)
-      ctx.response.status = 500;
-      ctx.response.body = "Internal server error";
-      return
+      ctx.response.status = 200;
+      // ctx.response.body = "Internal server error";
+      // return
     }
-    console.error(error);
-    ctx.response.status = 500;
-    ctx.response.body = "Internal server error";
+    // console.error(error);
+    // ctx.response.status = 500;
+    // ctx.response.body = "Internal server error";
   }
 });
 
