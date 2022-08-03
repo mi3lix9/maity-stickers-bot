@@ -30,11 +30,7 @@ app.use(async (ctx, next) => {
         conversation: await ctx.conversation.active(),
         error: error.message
       });
-      
-      (ctx.session as any).conversation = {}
       await ctx.conversation.exit();
-      
-      console.log((ctx.session as any).conversation);
       return await ctx.reply(error.message) 
       
     }
