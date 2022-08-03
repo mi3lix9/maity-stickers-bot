@@ -52,6 +52,8 @@ export function initBot(token: string, storage?: StorageAdapter<SessionData>) {
 
 const bot = new Composer<MyContext>();
 
+bot.hears("__reset", (ctx) => delete (ctx.session as any).conversation);
+
 bot.command("cancel", (ctx) => {
   ctx.conversation.exit();
   return ctx.reply("Canceled.");
