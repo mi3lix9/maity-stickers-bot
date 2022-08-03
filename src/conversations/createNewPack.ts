@@ -18,19 +18,22 @@ export async function createStickerPack(
      For example: mystickers"
   );
 
-  const { name, ctx: cttx } = await askName(conversation, (ctx) =>
+  const name = await askName(conversation, (ctx) =>
     ctx.reply("This pack already exists, please send another name")
   );
 
-  // await ctx.reply(
-  //   "Cool! Now send me a sticker or a photo and let me add it to your pack"
-  // );
-  // const { sticker, emojis } = await askSticker(conversation);
+  await ctx.reply(
+    "Cool! Now send me a sticker or a photo and let me add it to your pack"
+  );
+  const { sticker, emojis } = await askSticker(conversation);
+  await ctx.reply(
+    "Sticker pack created succefully! Send another sticker if you want to add more, or send /done to stop."
+  );
 
-  cttx.session.sets.add(name);
-  console.log(ctx.session.sets);
+  ctx = await conversation.waitFor([":sticker", ":photo", ":file"]);
+  ctx.session.sets.add(name);
 
-  return ctx.reply(`title: ${title} name: ${name}`);
+  return await ctx.reply(`title: ${title} name: ${name}`);
 }
 
 async function askName(
@@ -47,7 +50,7 @@ async function askName(
     return await conversation.skip();
   }
 
-  return { name, ctx };
+  return name;
 }
 
 // export async function createNewPack(
