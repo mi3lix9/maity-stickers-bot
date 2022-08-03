@@ -28,7 +28,13 @@ export type MyConversation = Conversation<MyContext>;
 
 export function initBot(token: string, storage?: StorageAdapter<SessionData>) {
   const _bot = new Bot<MyContext>(token);
-  // _bot.api.config.use(autoRetry({ retryOnInternalServerErrors: false }));
+  _bot.api.config.use(
+    autoRetry({
+      retryOnInternalServerErrors: false,
+      maxDelaySeconds: 10,
+      maxRetryAttempts: 3,
+    })
+  );
 
   _bot.use(
     session({

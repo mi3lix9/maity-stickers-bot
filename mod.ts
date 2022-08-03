@@ -31,7 +31,8 @@ app.use(async (ctx, next) => {
         error: error.message
       });
       await ctx.conversation.exit();
-      return await ctx.reply(error.message) 
+      
+       await ctx.reply(error.message) 
       
     }
     console.error(error);
