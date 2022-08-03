@@ -26,6 +26,16 @@ export async function createStickerPack(
     "Cool! Now send me a sticker or a photo and let me add it to your pack"
   );
   const { sticker, emojis } = await askSticker(conversation);
+
+  try {
+    await ctx.api.createNewStickerSet(ctx.from?.id!, name, title, emojis, {
+      png_sticker: sticker,
+    });
+  } catch (error) {
+    console.log(error);
+    return await ctx.reply("Something went wrong, please try again later :(");
+  }
+
   await ctx.reply(
     "Sticker pack created succefully! Send another sticker if you want to add more, or send /done to stop."
   );
@@ -73,10 +83,6 @@ async function askName(
 //   ctx = await conversation.wait();
 //   const { emojis, sticker, ctx: newCtx } = await askSticker(conversation, ctx);
 //   ctx = newCtx;
-//   try {
-//     await ctx.api.createNewStickerSet(ctx.from?.id!, name, title, emojis, {
-//       png_sticker: sticker,
-//     });
 
 //     ctx.session.sets.add(name);
 //     await ctx.reply(

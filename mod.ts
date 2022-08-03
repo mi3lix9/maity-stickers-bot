@@ -11,8 +11,7 @@ if (typeof token === "undefined") {
 }
 
 const storage = freeStorage<SessionData>(token);
-// const bot = initBot(token, storage);
-const bot = initBot(token);
+const bot = initBot(token, storage);
 
 const app = new Application();
 const router = new Router();
