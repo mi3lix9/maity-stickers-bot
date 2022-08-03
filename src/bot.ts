@@ -37,7 +37,7 @@ export function initBot(token: string, storage?: StorageAdapter<SessionData>) {
     })
   );
 
-  _bot.use(conversations());
+  // _bot.use(conversations());
   _bot.use(bot);
 
   _bot.catch(async (error) => {
@@ -49,6 +49,11 @@ export function initBot(token: string, storage?: StorageAdapter<SessionData>) {
 }
 
 const bot = new Composer<MyContext>();
+
+bot.hears("__reset", (ctx) => {
+  ctx.reply((ctx.session as any).conversation);
+  delete (ctx.session as any).conversation;
+});
 
 bot.command("cancel", async (ctx) => {
   await ctx.conversation.exit();
