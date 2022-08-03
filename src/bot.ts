@@ -12,10 +12,7 @@ import {
   conversations,
   createConversation,
 } from "@grammyjs/conversations";
-// import {
-//   FileFlavor,
-//   hydrateFiles,
-// } from "https://deno.land/x/grammy_files@v1.0.4/mod.ts";
+import { autoRetry } from "https://esm.sh/@grammyjs/auto-retry";
 
 import { addSticker } from "./conversations/addSticker.ts";
 import { createStickerPack } from "./conversations/createNewPack.ts";
@@ -29,7 +26,12 @@ export type MyConversation = Conversation<MyContext>;
 
 export function initBot(token: string, storage?: StorageAdapter<SessionData>) {
   const _bot = new Bot<MyContext>(token);
-  // _bot.api.config.use(hydrateFiles(_bot.token));
+  _bot.api.config.use(
+    autoRetry({
+      maxDelaySeconds: 10,
+      retryOnInternalServerErrors: false,
+    })
+  );
   _bot.use(
     session({
       initial: createInitialSessionData,
