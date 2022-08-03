@@ -26,10 +26,11 @@ app.use(async (ctx, next) => {
     if (error instanceof BotError<MyContext>) { 
       const ctx = error.ctx as MyContext
       console.error({
-        user: ctx.from,
+        message: ctx.message,
         conversation: await ctx.conversation.active(),
         error: error.error
       });
+      delete (ctx.session as any).conversation
       await ctx.conversation.exit();
       return await ctx.reply(error.message) 
       
