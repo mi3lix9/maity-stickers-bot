@@ -51,6 +51,9 @@ export async function processSticker(
   const filePath = `https://api.telegram.org/file/bot${Deno.env.get(
     "BOT_TOKEN"
   )}/${file.file_path}`;
-
-  return await resizeImage(filePath);
+  try {
+    return await resizeImage(filePath);
+  } catch {
+    return undefined;
+  }
 }

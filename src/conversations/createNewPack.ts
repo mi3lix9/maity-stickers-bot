@@ -1,5 +1,6 @@
 import { MyConversation, MyContext } from "../bot.ts";
 import { askSticker } from "../utils/askSticker.ts";
+import { addSticker } from "./addSticker.ts";
 export async function createStickerPack(
   conversation: MyConversation,
   ctx: MyContext
@@ -43,7 +44,7 @@ export async function createStickerPack(
   ctx = await conversation.waitFor([":sticker", ":photo", ":file"]);
   ctx.session.sets.add(name);
 
-  return await ctx.reply(`title: ${title} name: ${name}`);
+  return await addSticker(conversation, ctx, name);
 }
 
 async function askName(

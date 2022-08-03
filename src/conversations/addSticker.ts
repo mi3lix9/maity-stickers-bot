@@ -11,7 +11,6 @@ export async function addSticker(
   if (!name) {
     return await addStickerUtil(conversation, ctx);
   }
-
   ctx = await conversation.wait();
 
   if (ctx.message?.text?.toLocaleLowerCase() === "/done") {
@@ -63,7 +62,7 @@ async function askPack(
 
   ctx = await conversation.waitFor("callback_query:data");
   const chosenPack = ctx.callbackQuery?.data!;
-  // await ctx.answerCallbackQuery(); // This function causes an error
+  await ctx.answerCallbackQuery(); // This function causes an error
   await ctx.editMessageText(`You chose ${chosenPack}`);
   return chosenPack;
 }
