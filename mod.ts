@@ -23,7 +23,7 @@ app.use(async (_, next) => {
   try {
     await next();
   } catch (error) {
-    console.error({ error });
+    console.error(error);
     return new Response("Internal server error", { status: 500 });
   }
 });
