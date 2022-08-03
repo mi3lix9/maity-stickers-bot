@@ -12,7 +12,6 @@ import {
   conversations,
   createConversation,
 } from "@grammyjs/conversations";
-import { autoRetry } from "https://esm.sh/@grammyjs/auto-retry";
 
 import { addSticker } from "./conversations/addSticker.ts";
 import { createStickerPack } from "./conversations/createNewPack.ts";
@@ -26,12 +25,7 @@ export type MyConversation = Conversation<MyContext>;
 
 export function initBot(token: string, storage?: StorageAdapter<SessionData>) {
   const _bot = new Bot<MyContext>(token);
-  _bot.api.config.use(
-    autoRetry({
-      maxDelaySeconds: 10,
-      retryOnInternalServerErrors: false,
-    })
-  );
+
   _bot.use(
     session({
       initial: createInitialSessionData,
@@ -52,10 +46,10 @@ export function initBot(token: string, storage?: StorageAdapter<SessionData>) {
 
 const bot = new Composer<MyContext>();
 
-bot.hears("__reset", (ctx) => delete (ctx.session as any).conversation);
+bot.hears("__reset", (ctx) => delete (ctx.session as any).conversations);
 
-bot.command("cancel", (ctx) => {
-  ctx.conversation.exit();
+bot.command("cancel", async (ctx) => {
+  await ctx.conversation.exit();
   return ctx.reply("Canceled.");
 });
 
