@@ -12,24 +12,24 @@ import {
   conversations,
   createConversation,
 } from "@grammyjs/conversations";
-import {
-  FileFlavor,
-  hydrateFiles,
-} from "https://deno.land/x/grammy_files@v1.0.4/mod.ts";
+// import {
+//   FileFlavor,
+//   hydrateFiles,
+// } from "https://deno.land/x/grammy_files@v1.0.4/mod.ts";
 
 import { addSticker } from "./conversations/addSticker.ts";
 import { createStickerPack } from "./conversations/createNewPack.ts";
 import { createInitialSessionData, SessionData } from "./session.ts";
 
-export type MyContext = SessionFlavor<SessionData> &
-  ConversationFlavor &
-  FileFlavor<Context>;
+export type MyContext = Context &
+  SessionFlavor<SessionData> &
+  ConversationFlavor;
 
 export type MyConversation = Conversation<MyContext>;
 
 export function initBot(token: string, storage?: StorageAdapter<SessionData>) {
   const _bot = new Bot<MyContext>(token);
-  _bot.api.config.use(hydrateFiles(_bot.token));
+  // _bot.api.config.use(hydrateFiles(_bot.token));
   _bot.use(
     session({
       initial: createInitialSessionData,

@@ -48,6 +48,9 @@ export async function processSticker(
     return ctx.message.sticker.file_id;
   }
   const file = await ctx.getFile();
-  const path = file.getUrl();
-  return await resizeImage(path);
+  const filePath = `https://api.telegram.org/file/bot${Deno.env.get(
+    "BOT_TOKEN"
+  )}/${file.file_path}`;
+
+  return await resizeImage(filePath);
 }
