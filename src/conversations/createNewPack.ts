@@ -22,10 +22,10 @@ export async function createStickerPack(
     ctx.reply("This pack already exists, please send another name")
   );
 
-  await ctx.reply(
-    "Cool! Now send me a sticker or a photo and let me add it to your pack"
-  );
-  const { sticker, emojis } = await askSticker(conversation);
+  // await ctx.reply(
+  //   "Cool! Now send me a sticker or a photo and let me add it to your pack"
+  // );
+  // const { sticker, emojis } = await askSticker(conversation);
 
   ctx.session.sets.add(name);
   console.log(ctx.session.sets);
