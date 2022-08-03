@@ -19,12 +19,13 @@ const router = new Router();
 router.post("/" + token, webhookCallback(bot, "oak"));
 router.use(() => new Response("Hello world!"));
 
-app.use(async (_, next) => {
+app.use(async (ctx, next) => {
   try {
     await next();
   } catch (error) {
     console.error(error);
-    return new Response("Internal server error", { status: 500 });
+    ctx.response.status = 500;
+    ctx.response.body = "Internal server error";
   }
 });
 
