@@ -7,8 +7,10 @@ export async function createNewPack(
   ctx: MyContext
 ) {
   await ctx.reply("Send title of the pack");
-  ctx = await conversation.wait();
-  const title = ctx.message?.text!;
+
+  const title = await conversation.form.text((ctx) =>
+    ctx.reply("Wrong title, please send a valid title")
+  );
 
   await ctx.reply("Send name of the pack");
   const name = await askName(conversation, ctx);
@@ -18,12 +20,14 @@ export async function createNewPack(
   );
 
   ctx = await conversation.wait();
-  const { emojis, sticker } = await askSticker(conversation, ctx);
+  const { emojis, sticker, ctx: newCtx } = await askSticker(conversation, ctx);
+  ctx = newCtx;
   try {
     await ctx.api.createNewStickerSet(ctx.from?.id!, name, title, emojis, {
       png_sticker: sticker,
     });
-    conversation.external(() => ctx.session.sets.push(name));
+
+    ctx.session.sets.push(name);
     await ctx.reply(
       `Sticker added! send another sticker or send /done to stop.`
     );
@@ -38,8 +42,7 @@ async function askName(
   conversation: MyConversation,
   ctx: MyContext
 ): Promise<string> {
-  const { message } = await conversation.waitFor(":text");
-  const rawName = message?.text!;
+  const rawName = await conversation.form.text();
   // Regex to remove spaces and special characters
   let name = rawName.replace(/[^a-zA-Z0-9]/g, "");
   // Telegram requires bot name to ba part of the pack name

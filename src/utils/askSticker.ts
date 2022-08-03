@@ -6,7 +6,7 @@ import { resizeImage } from "./resizeImage.ts";
 export async function askSticker(
   conversation: MyConversation,
   ctx: MyContext
-): Promise<{ sticker: string | InputFile; emojis: string }> {
+): Promise<{ sticker: string | InputFile; emojis: string; ctx: MyContext }> {
   // ctx = await conversation.wait();
 
   const sticker = await processSticker(ctx);
@@ -18,7 +18,7 @@ export async function askSticker(
 
   await ctx.reply("Great! Now send me emojis for your sticker");
   const emojis = await askEmojis(conversation, ctx);
-  return { sticker, emojis };
+  return { sticker, emojis, ctx };
 }
 
 async function askEmojis(
