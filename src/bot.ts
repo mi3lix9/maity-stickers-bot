@@ -36,16 +36,15 @@ export function initBot(token: string, storage?: StorageAdapter<SessionData>) {
       storage,
     })
   );
-
   // _bot.use(conversations());
-  _bot.use(bot);
   _bot.use(async (ctx, next) => {
-    try {
-      await next();
-    } catch (e) {
-      console.error({ e });
-    }
+    delete (ctx.session as any).conversation;
+    await ctx.conversation.exit();
+    ctx.reply("DELETED");
+    return await next();
   });
+  _bot.use(bot);
+
   _bot.catch(async (error) => {
     await error.ctx.reply(error.message);
     console.log(error.message);
