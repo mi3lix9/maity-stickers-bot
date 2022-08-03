@@ -12,6 +12,9 @@ import {
   conversations,
   createConversation,
 } from "@grammyjs/conversations";
+import { autoRetry } from "https://esm.sh/@grammyjs/auto-retry";
+
+// Use the plugin.
 
 import { addSticker } from "./conversations/addSticker.ts";
 import { createStickerPack } from "./conversations/createNewPack.ts";
@@ -25,6 +28,7 @@ export type MyConversation = Conversation<MyContext>;
 
 export function initBot(token: string, storage?: StorageAdapter<SessionData>) {
   const _bot = new Bot<MyContext>(token);
+  _bot.api.config.use(autoRetry({ retryOnInternalServerErrors: false }));
 
   _bot.use(
     session({
@@ -57,8 +61,8 @@ bot.command("start", async (ctx) => {
   );
 });
 
-bot.use(createConversation(createStickerPack));
-bot.use(createConversation(addSticker));
+// bot.use(createConversation(createStickerPack));
+// bot.use(createConversation(addSticker));
 
 bot.command(
   "newpack",
