@@ -32,7 +32,7 @@ app.use(async (ctx, next) => {
       });
       await botCtx.conversation.exit();
       
-      botCtx.
+
       await botCtx.reply(error.message)
       ctx.response.status = 500;
       ctx.response.body = "Internal server error";
