@@ -37,6 +37,9 @@ export function initBot(token: string, storage?: StorageAdapter<SessionData>) {
     })
   );
   _bot.use(conversations());
+  _bot.use(async (ctx) => {
+    await ctx.conversation.exit();
+  });
   _bot.use(bot);
   _bot.catch(async (error) => {
     await error.ctx.reply(error.message);
