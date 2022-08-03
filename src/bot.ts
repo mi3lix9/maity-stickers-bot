@@ -46,8 +46,6 @@ export function initBot(token: string, storage?: StorageAdapter<SessionData>) {
 
 const bot = new Composer<MyContext>();
 
-bot.hears("__reset", (ctx) => delete (ctx.session as any).conversations);
-
 bot.command("cancel", async (ctx) => {
   await ctx.conversation.exit();
   return ctx.reply("Canceled.");
@@ -55,7 +53,7 @@ bot.command("cancel", async (ctx) => {
 
 bot.command("start", async (ctx) => {
   return await ctx.reply(
-    "Hello! I am a bot that helps you create sticker packs easily, please enter /newpack to start new pack or /addSticker to add sticker to your existing pack \n\n Please notice that, this sticker is still under development, so you might get unexpected results. Please report any bugs to Ali @mi3lix9! "
+    "Hello! I am a bot that helps you create sticker packs easily, please enter /newpack to start new pack or /addSticker to add sticker to your existing pack \n\n Please notice that, this sticker is still under development, so you might get unexpected results. Please report any bugs to Ali @mi3lix9!"
   );
 });
 

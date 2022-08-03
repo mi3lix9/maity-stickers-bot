@@ -24,7 +24,12 @@ app.use(async (ctx, next) => {
   try {
     await next();
   } catch (e) {
-    console.log(e);
+    // if (e instanceof TypeError) {
+    //   console.error(e);
+    //   ctx.response.status = 500;
+    //   ctx.response.body = "Internal server error";
+    // }
+    console.error(e);
     ctx.response.status = 500;
     ctx.response.body = "Internal server error";
   }
