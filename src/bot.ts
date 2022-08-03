@@ -71,8 +71,8 @@ bot.command("start", async (ctx) => {
   );
 });
 
-// bot.use(createConversation(createStickerPack));
-// bot.use(createConversation(addSticker));
+bot.use(createConversation(createStickerPack));
+bot.use(createConversation(addSticker));
 
 bot.command(
   "newpack",
