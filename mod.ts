@@ -20,12 +20,18 @@ const router = new Router();
 router.post("/" + token, webhookCallback(bot, "oak"));
 router.use(() => new Response("Hello world!"));
 
+app.use(async (ctx, next) => {
+  try {
+    await next();
+  } catch (e) {
+    console.log(e);
+    ctx.response.status = 500;
+    ctx.response.body = "Internal server error";
+  }
+});
+
 app.use(router.routes());
 app.use(router.allowedMethods());
-
-app.addEventListener("error", (e) => {
-  console.error("ERROR: ", e.error);
-});
 
 app.addEventListener("listen", (e) => {
   console.log("Bot is started using Webhooks at: ", e.hostname);
