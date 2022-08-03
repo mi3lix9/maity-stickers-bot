@@ -1,7 +1,7 @@
-import { webhookCallback } from "https://deno.land/x/grammy@v1.9.2/mod.ts";
+import { BotError, webhookCallback } from "grammy";
 import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 import { freeStorage } from "@grammyjs/freestorage";
-import { initBot } from "./src/bot.ts";
+import { initBot, MyContext } from "./src/bot.ts";
 import { SessionData } from "./src/session.ts";
 
 const token = Deno.env.get("BOT_TOKEN");
@@ -23,6 +23,11 @@ app.use(async (ctx, next) => {
   try {
     await next();
   } catch (error) {
+    if (error instanceof BotError<MyContext>) { 
+      console.error( {botError:error.error});
+      return (error.ctx as MyContext).reply(error.message) 
+      
+    }
     console.error(error);
     ctx.response.status = 500;
     ctx.response.body = "Internal server error";
