@@ -1,41 +1,52 @@
-import { Bot, session } from "grammy";
-import { conversations, createConversation } from "@grammyjs/conversations";
-import { freeStorage } from "@grammyjs/freestorage";
-import { BOT_TOKEN } from "../constants.ts";
+import {
+  Bot,
+  session,
+  Composer,
+  StorageAdapter,
+  Context,
+  SessionFlavor,
+} from "grammy";
+import {
+  Conversation,
+  ConversationFlavor,
+  conversations,
+  createConversation,
+} from "@grammyjs/conversations";
 
 import { addSticker } from "./conversations/addSticker.ts";
 import { createNewPack } from "./conversations/createNewPack.ts";
-import { MyContext, SessionData } from "./types.ts";
+import { createInitialSessionData, SessionData } from "./session.ts";
 
-if (typeof BOT_TOKEN === "undefined") {
-  throw new Error("BOT_TOKEN is not defined");
+export type MyContext = Context &
+  SessionFlavor<SessionData> &
+  ConversationFlavor;
+
+export type MyConversation = Conversation<MyContext>;
+
+export function initBot(token: string, storage?: StorageAdapter<SessionData>) {
+  const _bot = new Bot<MyContext>(token);
+  _bot.use(
+    session({
+      initial: createInitialSessionData,
+      storage,
+    })
+  );
+
+  _bot.use(conversations());
+  _bot.use(bot);
+
+  _bot.catch(async (error) => {
+    await error.ctx.reply(error.message);
+    console.log(error.message);
+  });
+
+  return _bot;
 }
 
-export const bot = new Bot<MyContext>(BOT_TOKEN);
-
-const storage =
-  Deno.env.get("DENO_ENV") === "DEVELOPMENT"
-    ? undefined
-    : freeStorage<SessionData>(bot.token);
-
-bot.use(
-  session({
-    initial: () => ({
-      sets: [],
-      fastMode: false,
-    }),
-    storage,
-  })
-);
+const bot = new Composer<MyContext>();
 
 bot.command("cancel", (ctx) => {
-  delete ctx.session.conversation;
-});
-
-bot.use(conversations());
-
-bot.command("cancel", (ctx) => {
-  delete ctx.session.conversation; // This code should be deleted after fixing all problems
+  // delete ctx.session.conversation; // This code should be deleted after fixing all problems
   ctx.conversation.exit();
   return ctx.reply("Canceled.");
 });
@@ -59,9 +70,4 @@ bot.command(
 );
 bot.command("delpack", async (ctx) => {
   await ctx.reply("You can delete your pack from the official @stickers bot ");
-});
-
-bot.catch(async (error) => {
-  await error.ctx.reply(error.message);
-  console.log(error.message);
 });

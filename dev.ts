@@ -1,7 +1,13 @@
 import "https://deno.land/x/dotenv/load.ts";
-import { bot } from "./src/bot.ts";
+import { initBot } from "./src/bot.ts";
 
-Deno.env.set("DENO_ENV", "DEVELOPMENT");
+const BOT_TOKEN = Deno.env.get("BOT_TOKEN");
+
+if (typeof BOT_TOKEN === "undefined") {
+  throw new Error("BOT_TOKEN is not defined");
+}
+
+const bot = initBot(BOT_TOKEN);
 
 console.log("Bot is started using Long Poll.");
-await bot.start();
+bot.start();
