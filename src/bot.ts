@@ -36,7 +36,7 @@ export function initBot(token: string, storage?: StorageAdapter<SessionData>) {
       storage,
     })
   );
-  // _bot.use(conversations());
+  _bot.use(conversations());
   _bot.use(async (ctx, next) => {
     delete (ctx.session as any).conversation;
     await ctx.conversation.exit();
