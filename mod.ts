@@ -23,22 +23,23 @@ app.use(async (ctx, next) => {
   try {
     await next();
   } catch (error) {
-    if (error instanceof BotError<MyContext>) { 
-      const ctx = error.ctx as MyContext
+    if (error instanceof BotError<MyContext>) {
+      const botCtx = error.ctx as MyContext;
       console.error({
-        message: ctx.message,
-        conversation: await ctx.conversation.active(),
+        message: botCtx.message,
+        conversation: await botCtx.conversation.active(),
         error: error.message
       });
-      await ctx.conversation.exit();
+      await botCtx.conversation.exit();
       
-       await ctx.reply(error.message) 
-      
+      await botCtx.reply(error.message)
+      ctx.response.status = 500;
+      ctx.response.body = "Internal server error";
+      return
     }
     console.error(error);
     ctx.response.status = 500;
     ctx.response.body = "Internal server error";
-    await next();
   }
 });
 
