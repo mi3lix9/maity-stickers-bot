@@ -1,7 +1,7 @@
 import { InlineKeyboard } from "grammy";
 import { StickerSet } from "@grammy/types";
-import type { MyConversation, MyContext } from "../types.ts";
 import { askSticker } from "../utils/askSticker.ts";
+import { MyContext, MyConversation } from "../bot.ts";
 
 export async function addSticker(
   conversation: MyConversation,
@@ -19,7 +19,7 @@ export async function addSticker(
     return;
   }
 
-  const { emojis, sticker } = await askSticker(conversation, ctx);
+  const { emojis, sticker } = await askSticker(conversation);
 
   await ctx.api.addStickerToSet(ctx.from?.id!, name, emojis, {
     png_sticker: sticker,
@@ -69,7 +69,6 @@ async function askPack(
 }
 
 async function getStickerPacks(ctx: MyContext) {
-  // const sets = ctx.session.sets;
   const sets = ctx.session.sets;
 
   const packs: StickerSet[] = [];
@@ -78,10 +77,8 @@ async function getStickerPacks(ctx: MyContext) {
     try {
       const pack = await ctx.api.getStickerSet(set);
       packs.push(pack);
-    } catch (e) {
-      const index = sets.indexOf(set);
-      sets.splice(index, 1);
-      console.error(e);
+    } catch {
+      sets.delete(set);
     }
   }
   return packs;

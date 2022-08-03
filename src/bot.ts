@@ -12,19 +12,24 @@ import {
   conversations,
   createConversation,
 } from "@grammyjs/conversations";
+import {
+  FileFlavor,
+  hydrateFiles,
+} from "https://deno.land/x/grammy_files@v1.0.4/mod.ts";
 
 import { addSticker } from "./conversations/addSticker.ts";
-import { createNewPack } from "./conversations/createNewPack.ts";
+import { createStickerPack } from "./conversations/createNewPack.ts";
 import { createInitialSessionData, SessionData } from "./session.ts";
 
-export type MyContext = Context &
-  SessionFlavor<SessionData> &
-  ConversationFlavor;
+export type MyContext = SessionFlavor<SessionData> &
+  ConversationFlavor &
+  FileFlavor<Context>;
 
 export type MyConversation = Conversation<MyContext>;
 
 export function initBot(token: string, storage?: StorageAdapter<SessionData>) {
   const _bot = new Bot<MyContext>(token);
+  _bot.api.config.use(hydrateFiles(_bot.token));
   _bot.use(
     session({
       initial: createInitialSessionData,
@@ -46,7 +51,6 @@ export function initBot(token: string, storage?: StorageAdapter<SessionData>) {
 const bot = new Composer<MyContext>();
 
 bot.command("cancel", (ctx) => {
-  // delete ctx.session.conversation; // This code should be deleted after fixing all problems
   ctx.conversation.exit();
   return ctx.reply("Canceled.");
 });
@@ -57,12 +61,12 @@ bot.command("start", async (ctx) => {
   );
 });
 
-bot.use(createConversation(createNewPack));
+bot.use(createConversation(createStickerPack));
 bot.use(createConversation(addSticker));
 
 bot.command(
   "newpack",
-  async (ctx) => await ctx.conversation.enter("createNewPack")
+  async (ctx) => await ctx.conversation.enter("createStickerPack")
 );
 bot.command(
   "addsticker",

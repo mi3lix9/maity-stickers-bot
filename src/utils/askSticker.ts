@@ -1,35 +1,31 @@
 import { InputFile } from "grammy";
-import { bot } from "../bot.ts";
-import { MyConversation, MyContext } from "../types.ts";
+import { MyConversation, MyContext } from "../bot.ts";
 import { resizeImage } from "./resizeImage.ts";
 
 export async function askSticker(
-  conversation: MyConversation,
-  ctx: MyContext
-): Promise<{ sticker: string | InputFile; emojis: string; ctx: MyContext }> {
-  // ctx = await conversation.wait();
-
+  conversation: MyConversation
+): Promise<{ sticker: string | InputFile; emojis: string }> {
+  const ctx = await conversation.waitFor([":sticker", ":photo", ":file"]);
   const sticker = await processSticker(ctx);
 
   if (!sticker) {
-    await ctx.reply("I couldn't process your sticker, please try again");
-    return await askSticker(conversation, ctx);
+    await ctx.reply(
+      "I couldn't process your sticker, send a valid photo or sticker"
+    );
+    return await conversation.skip();
   }
 
   await ctx.reply("Great! Now send me emojis for your sticker");
-  const emojis = await askEmojis(conversation, ctx);
-  return { sticker, emojis, ctx };
+  const emojis = await askEmojis(conversation);
+  return { sticker, emojis };
 }
 
-async function askEmojis(
-  conversation: MyConversation,
-  ctx: MyContext
-): Promise<string> {
-  const { message } = await conversation.waitFor(":text");
-  const emojis = message?.text!;
+async function askEmojis(conversation: MyConversation): Promise<string> {
+  const ctx = await conversation.waitFor(":text");
+  const emojis = ctx.message?.text!;
   if (!checkEmoji(emojis)) {
-    await ctx.reply("I couldn't process your emojis, please try again");
-    return askEmojis(conversation, ctx);
+    await ctx.reply("I couldn't process your emojis, please send emojis");
+    return await conversation.skip();
   }
   return emojis;
 }
@@ -52,16 +48,6 @@ export async function processSticker(
     return ctx.message.sticker.file_id;
   }
   const file = await ctx.getFile();
-  const filePath = `https://api.telegram.org/file/bot${bot.token}/${file.file_path}`;
-
-  // const isImage = file.file_path?.endsWith(
-  //   ".webp" || ".jpg" || ".png" || ".jpeg"
-  // );
-  // if (!isImage) {
-  //   return undefined;
-  // }
-  // console.log(file.getUrl());
-  // console.log(file.file_path);
-
-  return await resizeImage(filePath);
+  const path = file.getUrl();
+  return await resizeImage(path);
 }
