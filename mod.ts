@@ -28,8 +28,10 @@ app.use(async (ctx, next) => {
       console.error({
         message: ctx.message,
         conversation: await ctx.conversation.active(),
-        error: error.error
+        error: error.message
       });
+      console.log((ctx.session as any).conversation);
+      
       delete (ctx.session as any).conversation
       await ctx.conversation.exit();
       return await ctx.reply(error.message) 
