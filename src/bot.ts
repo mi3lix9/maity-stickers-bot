@@ -38,15 +38,6 @@ export function initBot(token: string, storage?: StorageAdapter<SessionData>) {
   );
   _bot.use(conversations());
   _bot.use(bot);
-  _bot.errorBoundary(async ({ ctx, error }) => {
-    console.log({ error });
-
-    if (await ctx.conversation.active()) {
-      await ctx.conversation.exit();
-    }
-
-    return await ctx.reply("Something went wrong, please try again later.");
-  });
   _bot.catch(async (error) => {
     await error.ctx.reply(error.message);
     console.log(error.message);

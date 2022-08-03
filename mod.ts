@@ -30,10 +30,11 @@ app.use(async (ctx, next) => {
         conversation: await ctx.conversation.active(),
         error: error.message
       });
-      console.log((ctx.session as any).conversation);
       
-      delete (ctx.session as any).conversation
+      (ctx.session as any).conversation = {}
       await ctx.conversation.exit();
+      
+      console.log((ctx.session as any).conversation);
       return await ctx.reply(error.message) 
       
     }
