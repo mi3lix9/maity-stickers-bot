@@ -1,9 +1,9 @@
 import { InputFile } from "grammy";
 import { Image } from "imagescript";
-import { config } from "https://deno.land/x/dotenv/mod.ts";
+
 import { Tinify } from "https://deno.land/x/tinify/mod.ts";
 
-const TINIFY_KEY = Deno.env.get("TINIFY_KEY") || config().TINIFY_KEY;
+const TINIFY_KEY = Deno.env.get("TINIFY_KEY");
 
 if (typeof TINIFY_KEY === "undefined") {
   throw new Error("TINIFY_KEY is not set");
