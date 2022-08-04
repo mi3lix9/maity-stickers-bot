@@ -13,7 +13,7 @@ import {
   createConversation,
 } from "@grammyjs/conversations";
 import { autoRetry } from "https://esm.sh/@grammyjs/auto-retry";
-
+import { processSticker } from "./utils/askSticker.ts";
 // Use the plugin.
 
 import { addSticker } from "./conversations/addSticker.ts";
@@ -43,10 +43,7 @@ export function initBot(token: string, storage?: StorageAdapter<SessionData>) {
     })
   );
   _bot.use(conversations());
-  // _bot.use(async (ctx, next) => {
-  //   await ctx.conversation.exit();
-  //   return await next();
-  // });
+
   _bot.use(bot);
   _bot.catch(async (error) => {
     await error.ctx.reply(error.message);
@@ -88,3 +85,12 @@ bot.command(
 bot.command("delpack", async (ctx) => {
   await ctx.reply("You can delete your pack from the official @stickers bot ");
 });
+
+// bot.on(":photo", async (ctx) => {
+//   console.log("photo");
+
+//   const sticker = await processSticker(ctx);
+//   if (sticker) {
+//     await ctx.replyWithSticker(sticker);
+//   }
+// });

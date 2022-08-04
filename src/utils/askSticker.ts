@@ -53,7 +53,7 @@ export async function processSticker(
   )}/${file.file_path}`;
   try {
     return await resizeImage(filePath);
-  } catch {
+  } catch (error) {
     return undefined;
   }
 }
