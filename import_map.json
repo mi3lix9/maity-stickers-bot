@@ -1,10 +1,10 @@
 {
   "imports": {
-    "grammy": "https://deno.land/x/grammy/mod.ts",
+    "grammy": "https://deno.land/x/grammy@v1.11.0/mod.ts",
+    "grammy/types": "https://deno.land/x/grammy@v1.11.0/types.ts",
     "@grammyjs/conversations": "https://deno.land/x/grammy_conversations/mod.ts",
     "@grammyjs/files": "https://deno.land/x/grammy_files/mod.ts",
     "@grammyjs/freestorage": "https://deno.land/x/grammy_storages/free/src/mod.ts",
-    "imagescript": "https://deno.land/x/imagescript/mod.ts",
-    "@grammy/types": "https://esm.sh/@grammyjs/types"
+    "imagescript": "https://deno.land/x/imagescript/mod.ts"
   }
 }

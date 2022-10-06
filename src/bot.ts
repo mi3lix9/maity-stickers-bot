@@ -13,12 +13,9 @@ import {
   createConversation,
 } from "@grammyjs/conversations";
 import { autoRetry } from "https://esm.sh/@grammyjs/auto-retry";
-import { processSticker } from "./utils/askSticker.ts";
-// Use the plugin.
-
-import { addSticker } from "./conversations/addSticker.ts";
-import { createStickerPack } from "./conversations/createNewPack.ts";
+import { processSticker } from "./utils/imageProcessor.ts";
 import { createInitialSessionData, SessionData } from "./session.ts";
+// import { addSticker, createStickerPack } from "./StickerGenerator.ts";
 
 export type MyContext = Context &
   SessionFlavor<SessionData> &
@@ -55,11 +52,6 @@ export function initBot(token: string, storage?: StorageAdapter<SessionData>) {
 
 const bot = new Composer<MyContext>();
 
-bot.hears("__reset", (ctx) => {
-  ctx.reply((ctx.session as any).conversation);
-  delete (ctx.session as any).conversation;
-});
-
 bot.command("cancel", async (ctx) => {
   await ctx.conversation.exit();
   return ctx.reply("Canceled.");
@@ -71,26 +63,29 @@ bot.command("start", async (ctx) => {
   );
 });
 
-bot.use(createConversation(createStickerPack));
-bot.use(createConversation(addSticker));
+// bot.use(createConversation(createStickerPack("ANIMATED")));
+// bot.use(createConversation(createStickerPack("PNG")));
+// bot.use(createConversation(createStickerPack("VIDEO")));
+// bot.use(createConversation(addSticker("ANIMATED")));
+// bot.use(createConversation(addSticker("PNG")));
+// bot.use(createConversation(addSticker("VIDEO")));
 
-bot.command(
-  "newpack",
-  async (ctx) => await ctx.conversation.enter("createStickerPack")
-);
-bot.command(
-  "addsticker",
-  async (ctx) => await ctx.conversation.enter("addSticker")
-);
-bot.command("delpack", async (ctx) => {
-  await ctx.reply("You can delete your pack from the official @stickers bot ");
-});
-
-// bot.on(":photo", async (ctx) => {
-//   console.log("photo");
-
-//   const sticker = await processSticker(ctx);
-//   if (sticker) {
-//     await ctx.replyWithSticker(sticker);
-//   }
+// bot.command(
+//   "newpack",
+//   async (ctx) => await ctx.conversation.enter("createStickerPack")
+// );
+// bot.command(
+//   "addsticker",
+//   async (ctx) => await ctx.conversation.enter("addSticker")
+// );
+// bot.command("delpack", async (ctx) => {
+//   await ctx.reply("You can delete your pack from the official @stickers bot ");
 // });
+
+bot.on([":photo", ":sticker", ":file"], async (ctx) => {
+  const sticker = await processSticker(ctx);
+
+  if (sticker) {
+    await ctx.replyWithDocument(sticker);
+  }
+});

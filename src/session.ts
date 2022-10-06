@@ -1,9 +1,9 @@
 export interface SessionData {
-  sets: Set<string>;
+  sets: Map<string, { name: string; type: "PNG" | "ANIMATED" | "VIDEO" }>;
 }
 
 export function createInitialSessionData(): SessionData {
   return {
-    sets: new Set(),
+    sets: new Map(),
   };
 }
